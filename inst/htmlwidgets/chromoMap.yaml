@@ -1,0 +1,10 @@
+dependencies:
+ - name: chromoMap
+   version: 1.0
+   src: htmlwidgets/lib/chromoMap-1.0
+   script:
+      - chromoMap-1.0.js
+      - d3.v5.js
+      
+   
+
