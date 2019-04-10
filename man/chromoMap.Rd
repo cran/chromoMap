@@ -2,84 +2,108 @@
 % Please edit documentation in R/chromoMap.R
 \name{chromoMap}
 \alias{chromoMap}
-\title{render interactive chromosome plots}
+\title{render interactive chromosome plots of any living organism and annotate elements}
 \usage{
-chromoMap(chData, type = c("annotation", "heatmap-single", "heatmap-double"),
-  align = "horizontal", bgCol = "white", bgBorder = "white",
-  chCol = "#c70039", chBorder = "#c70039", annoColor = "orange",
-  textCol = "black", HeatColRange = c("red", "white", "blue"),
-  dim = c(640, 480), width = NULL, height = NULL)
+chromoMap(ch.files, data.files, title = c(), ch_gap = 5, ploidy = 1,
+  top_margin = 25, left_margin = 40, chr_width = 6, chr_length = 4,
+  chr_color = c("black"), data_based_color_map = FALSE,
+  v_align = FALSE, segment_annotation = FALSE, lg_x = 0, lg_y = 0,
+  data_type = c("numeric", "categorical"), labels = FALSE,
+  canvas_width = 500, canvas_height = 520, data_colors = list(),
+  anno_col = c("yellow"), chr_text = c(TRUE), legend = c(FALSE),
+  hlinks = FALSE, aggregate_func = c("avg"))
 }
 \arguments{
-\item{chData}{The chromosome data required for annotating chromosome and creating 
-heatmaps. It is a data.frame with atleast three colums viz. name (specify the 
-name for annotation), chrom (specify chromosome name), and start (specify
-the start position of element). While for heatmaps additional columns 
-data and/or secondData need to added.}
+\item{ch.files}{filename(s) containing co-ordinates of the chromosomes to render}
 
-\item{type}{Specify the type of chromosome plot.Takes only one value from
-"annotation" , "heatmap-single", or "heatmap-double". For more information 
-about the type of plots see vignette.}
+\item{data.files}{filename(s) containing data to annotate on the chromosomes.}
 
-\item{align}{specify the alignment of plot. Takes the value "horizontal" or
-"vertical".}
+\item{title}{a character string to be used as a title in plot}
 
-\item{bgCol}{specify the backround color.}
+\item{ch_gap}{provide spacing between chromosomes.}
 
-\item{bgBorder}{specify the border color.}
+\item{ploidy}{specify the number of sets of chromsomes being passed.}
 
-\item{chCol}{specify the body color of chromosomes}
+\item{top_margin}{specify the margin from top of the plot}
 
-\item{chBorder}{specify the border color of chromosomes}
+\item{left_margin}{specify the margin from the left of the plot}
 
-\item{annoColor}{specify the color of annotation bars on the chromosomes.}
+\item{chr_width}{specify the width of each chromsome}
 
-\item{textCol}{specify the text color.}
+\item{chr_length}{specify the length of each chromsome.}
 
-\item{HeatColRange}{specify the heat-colors for the heatmap. Takes a character
-vecter with three color values each corresponding to minimum, medium, and
-maximum data.}
+\item{chr_color}{a vector specifying the color of each chromsome in a set. A color
+can be assigned to each set by passing a different color values as vector}
 
-\item{dim}{specify dimension of plot. Takes two values for width and height 
-of the plot.}
+\item{data_based_color_map}{a boolean to tell the plot to use the data provided in file for
+visualizing annotation}
 
-\item{width}{use to define width of widget. Usually ignore and do not change}
+\item{v_align}{a boolean for vertical alignment of plot}
 
-\item{height}{height of widget. ignore}
+\item{segment_annotation}{a boolean to use segment-annotation algorithm}
+
+\item{lg_x}{specify the x or horizontal distance of the legend from origin(bottom right corner)}
+
+\item{lg_y}{specify the y or vertical distnce of the legend from the origin}
+
+\item{data_type}{specifying the data type of the data used. takes value either 'categorical' or
+'numeric'}
+
+\item{labels}{a boolean to include labels in plot}
+
+\item{canvas_width}{width of the plot}
+
+\item{canvas_height}{height of the plot}
+
+\item{data_colors}{specify annotation colors for the data}
+
+\item{anno_col}{a vector to specify annotation color for each set.}
+
+\item{chr_text}{a boolean vector to enable or disable chromsome texts for each ploidy.set}
+
+\item{legend}{a boolean vector to enable or disable legend for each set/ploidy}
+
+\item{hlinks}{a boolean to use hyperlinks supplied in data}
+
+\item{aggregate_func}{takes either 'sum' or 'avg' to specift aggregate function for each loci}
 }
 \description{
-render an interactive graphics of human chromosome. It creates
-an HTML widget that calls the JavaScript library chromoMap.js that generates
-the chromosome graphics
+render an interactive graphics visualization of entire chromosomes
+ or chromosomal regions of any living organism. Chromosomal elements such as genes 
+ can be annotated easily using this tool.
 
 required for creating widgets
 }
 \examples{
+\dontrun{
 
 library(chromoMap)
-data("pancandata")
-#dataset contains two data
-#view data set
-head(pancandata$data1)
-head(pancandata$data2)
 
-#plotting simple annotation
-chromoMap(pancandata$data1)
+#simple annotations
+chromoMap("chromosome_file.txt","annotation_file.txt")
 
-#plotting heatmap-single
-chromoMap(pancandata$data1,type="heatmap-single")
+#polyploidy example
+chromoMap(c("chromosome_set1.txt","chromosome_set2.txt"),
+          c("annotation_set1.txt","annotation_set2.txt"), ploidy=2)
 
-#plotting heatmap double
-chromoMap(pancandata$data2,type="heatmap-double")
+#plotting group annotation
+chromoMap("chromosome_file.txt","annotation_file.txt",
+           data_base_color_map=T, data_type="categorical")
 
-#change orientation of plot
-chromoMap(pancandata$data1,align="vertical")
+#plotting chromsome heatmaps
+chromoMap("chromosome_file.txt","annotation_file.txt",
+           data_based_color_map=T, data_type="numeric")
+
+#enabling hyperlinks
+chromoMap("chromosome_file.txt","annotation_file.txt", hlinks=T)
+
+#enabling labels
+chromoMap("chromosome_file.txt","annotation_file.txt", labels=T)
 
 #change chromosome color
-chromoMap(pancandata$data1,chCol="green",chBorder="green")
+chromoMap("chromosome_file.txt","annotation_file.txt", chr_color="red")
 
-#change chromosome plot background and text color
-chromoMap(pancandata$data2,type="heatmap-double",textCol="white",bgCol="black")
+}
 
 
 

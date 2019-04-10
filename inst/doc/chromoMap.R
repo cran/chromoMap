@@ -8,97 +8,126 @@ knitr::opts_chunk$set(
 #  install.packages("chromoMap")
 #  
 
-## ------------------------------------------------------------------------
-library(chromoMap)
-data("pancandata")
-
-
-## ------------------------------------------------------------------------
-head(pancandata$data1,10)
-
-## ------------------------------------------------------------------------
-head(pancandata$data2,10)
-
 ## ----eval=FALSE----------------------------------------------------------
 #  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data1,type = "annotation")
+#  chromoMap("chromosome_file.txt","annotation_file.txt")
 
 ## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data1,type = "heatmap-single")
+#  chromoMap(c("chromosome_file_set_1.txt","chromosome_file_set_2.txt")
+#            ,c("annotation_file_set_1.txt","annotation_file_set_2.txt"), ploidy = 2)
 
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data2,type = "heatmap-double")
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data1,type = "annotation",dim = c(450,400))
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data2,type = "heatmap-double",align = "vertical")
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data1,chCol = "blue",chBorder = "blue")
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data1,chCol = "white",chBorder = "green")
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data1,annoColor = "pink")
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data1,textCol = "green")
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data1,bgBorder  = "#FF5733")
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data2,type="heatmap-double",bgCol  = "black")
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  chromoMap(pancandata$data2,type="heatmap-double",HeatColRange = c("red","yellow","green"))
-
-## ----eval=FALSE----------------------------------------------------------
-#  library(chromoMap)
-#  data("pancandata")
-#  #use a variable to store your chromoMap
-#  chmap = chromoMap(pancandata$data2,type="heatmap-double",HeatColRange = c("red","yellow","green"))
+## ----eval=F--------------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",segment_annotation = T)
 #  
-#  #pass this to the function
-#  chromoMapToHTML(chmap,file = "myfile.html",dir = "C:/Users/myfolder")
+
+## ----eval=F--------------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            data_based_color_map = T,
+#            data_type = "categorical",
+#            data_colors = list(c("orange","yellow")))
 #  
-#  #pass a title
-#  chromoMapToHTML(chmap,title = "Expression profile Comparison in normal vs tumor",file = "myfile.html",dir = "C:/Users/myfolder")
-#  
-#  #pass a description
-#  my_desc = "you can write a paragraph to describe your plot"
-#  
-#  chromoMapToHTML(chmap,title = "Expression profile Comparison in normal vs tumor",description = my_desc)
-#  
-#  #open document after save
-#  chromoMapToHTML(chmap,title = "Expression profile Comparison in normal vs tumor",description = my_desc,openAfterSave = TRUE)
-#  
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            data_based_color_map = T,
+#            data_type = "numeric")
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            data_based_color_map = T,
+#            data_type = "numeric",
+#            aggregate_func = "sum")
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap(c("chromosome_file_set_1.txt","chromosome_file_set_2.txt")
+#            ,c("annotation_file_set_1.txt","annotation_file_set_2.txt"),
+#            ploidy = 2, data_based_color_map = T,data_type = "numeric"
+#            ,aggregate_func = c("avg","sum"))
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            canvas_width = 600,
+#            canvas_height = 700)
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",title = "my first chromoMap plot")
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            top_margin = 25,
+#            left_margin = 15)
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            chr_color = c("orange"))
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap(c("chromosome_file_set_1.txt","chromosome_file_set_2.txt")
+#            ,c("annotation_file_set_1.txt","annotation_file_set_2.txt"),
+#            ploidy = 2,
+#            chr_color = c("pink","blue"))
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            anno_col = c("orange"))
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap(c("chromosome_file_set_1.txt","chromosome_file_set_2.txt")
+#            ,c("annotation_file_set_1.txt","annotation_file_set_2.txt"),
+#            ploidy = 2,
+#            anno_col = c("pink","blue"))
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            chr_width = 4,
+#            chr_length = 5)
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            ch_gap = 6)
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            chr_text = F)
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap(c("chromosome_file_set_1.txt","chromosome_file_set_2.txt")
+#            ,c("annotation_file_set_1.txt","annotation_file_set_2.txt"),
+#            ploidy = 2,
+#            chr_text = c(T,F))
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            v_align = T)
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            data_based_color_map = T,
+#            data_type = "categorical",
+#            legend = T)
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap(c("chromosome_file_set_1.txt","chromosome_file_set_2.txt")
+#            ,c("annotation_file_set_1.txt","annotation_file_set_2.txt"),
+#            ploidy = 2,
+#            data_based_color_map = T,
+#            data_type = "numeric",
+#            legend = c(F,T))
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            data_based_color_map = T,
+#            data_type = "categorical",
+#            legend = T, lg_x = 100,
+#            lg_y = 250)
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            labels=T)
+
+## ----eval=FALSE----------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            hlinks=T)
 
 ## ----eval=FALSE----------------------------------------------------------
 #  library(shiny)
@@ -127,11 +156,14 @@ head(pancandata$data2,10)
 #  server <- function(input, output) {
 #  
 #     output$myChromoMap <- renderChromoMap({
-#       chromoMap(pancandata$data1,type = "annotation")
+#       chromoMap("chromosome_file.txt","annotation_file.txt")
 #     })
 #  }
 #  
 #  # Run the application
 #  shinyApp(ui = ui, server = server)
 #  
+
+## ------------------------------------------------------------------------
+ sessionInfo()
 
