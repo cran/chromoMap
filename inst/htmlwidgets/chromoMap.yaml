@@ -1,7 +1,7 @@
 dependencies:
  - name: chromoMap
-   version: 2.0
-   src: htmlwidgets/lib/chromoMap-1.0
+   version: 0.3
+   src: htmlwidgets/lib/chromoMap-3.0
    script:
       - d3.v5.js
-      - chromoMap-1.0.js
+      - chromoMap-3.0.js

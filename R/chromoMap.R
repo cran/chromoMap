@@ -23,7 +23,6 @@
 #' @param  data_type specifying the data type of the data used. takes value either 'categorical' or
 #' 'numeric'
 #' @param data_colors specify annotation colors for the data
-#' @param v_align a boolean for vertical alignment of plot
 #' @param segment_annotation a boolean to use segment-annotation algorithm
 #' @param labels a boolean to include labels in plot
 #' @param chr_text a boolean vector to enable or disable chromsome texts for each ploidy.set
@@ -35,6 +34,28 @@
 #' @param anno_col a vector to specify annotation color for each set.
 #' @param canvas_width width of the plot
 #' @param canvas_height height of the plot
+#' @param plots specify the type of plot to visualize. takes either 'scatter' , 'bar' or 'tags'.(default: 'none')
+#' @param tag_filter a list to specify the filter operation and operands for each ploidy.
+#' @param plot_height specify plot height for each ploidy. default: c(30)
+#' @param plot_ticks specify number of ticks for plot axis. default: c(4)
+#' @param plot_color specify the plot color for each ploidy. default: c("blue")
+#' @param plot_y_domain specify plot y-axis domain. default: list(c(0,0))
+#' @param ref_line a boolean to use horizontal reference line in plot. default: c(FALSE)
+#' @param refl_pos specify the position of reference line. default: c(0)
+#' @param refl_color specify the color of the reference line. default: c("grey")
+#' @param refl_stroke_w specify the stroke width of the reference line. default: c(2)
+#' @param tagColor specify the color of tags. default: c("red")
+#' @param heat_map a boolean to use if chromosome heatmaps are shown. default: c(TRUE),
+#' @param text_font_size specify chromosome text font-size. default: c(10)
+#' @param chr_curve specify the chromosome curves at the telomeres or centromere loci. default:5
+#' @param title_font_size specify the font-size of the title. default:12
+#' @param label_font specify the font-size of the labels. default:9
+#' @param label_angle specify the angle of rotation of labels. default: -90
+#' @param vertical_grid a boolean to use vertical grid lines. default: FALSE
+#' @param grid_array specify the position(s) of grid line(s). default: c(0,5,20,45,100)
+#' @param grid_color specify the color of the grid lines. default: "grey"
+#' @param plot_filter a list specify the plot filter operation, operands, and filter-color for each ploidy. 
+#' @param id specify a unique id doe chromoMap plot. default: c("chromap")
 #' 
 #' 
 #' @examples 
@@ -87,12 +108,11 @@ chromoMap <- function(ch.files,
                       ch_gap=5,
                       ploidy=1,
                       top_margin=25,
-                      left_margin=40,
-                      chr_width=6,
+                      left_margin=50,
+                      chr_width=15,
                       chr_length=4,
                       chr_color=c("black"),
                       data_based_color_map=FALSE,
-                      v_align=FALSE, 
                       segment_annotation=FALSE,
                       lg_x=0,
                       lg_y=0,
@@ -100,10 +120,32 @@ chromoMap <- function(ch.files,
                       labels=FALSE,
                       canvas_width=500,
                       canvas_height=520
-                      ,data_colors=list(),anno_col=c("yellow"),chr_text=c(TRUE),
+                      ,data_colors=list(),anno_col=c("#10B85F"),chr_text=c(TRUE),
                       legend=c(FALSE),
                       hlinks=FALSE,
-                      aggregate_func=c("avg")
+                      aggregate_func=c("avg"),
+                      plots=c("none"),
+                      tag_filter = list(c("none",0)),
+                      plot_height=c(30),
+                      plot_ticks=c(4),
+                      plot_color=c("blue"),
+                      plot_y_domain = list(c(0,0)),
+                      ref_line=c(FALSE),
+                      refl_pos=c(0),
+                      refl_color=c("grey"),
+                      refl_stroke_w=c(2),
+                      tagColor = c("red"),
+                      heat_map = c(TRUE),
+                      text_font_size=c(10),
+                      chr_curve = 5,
+                      title_font_size = 12,
+                      label_font = 9,
+                      label_angle = -90,
+                      vertical_grid = FALSE,
+                      grid_array = c(0,5,20,45,100),
+                      grid_color = "grey",
+                      plot_filter = list(c("none",0)),
+                      id=c("chromap")
                       ) {
   
   
@@ -153,6 +195,26 @@ chromoMap <- function(ch.files,
     }
   }
   
+  if(length(ch.files)==1){
+    tag_filter=tag_filter
+  } else {
+    if(length(tag_filter)<length(ch.files)){
+      
+      for(h in 1:length(ch.files)){
+      tag_filter[h]=tag_filter[1]}
+    }
+  }
+  
+  if(length(ch.files)==1){
+    plots=c(plots[1],"")
+  } else {
+    if(length(plots)<length(ch.files)){
+      
+      
+      plots=rep(plots[1],length(ch.files))
+    }
+  }
+  
   
   if(length(ch.files)==1){
     chr_color=c(chr_color[1],"")
@@ -163,6 +225,117 @@ chromoMap <- function(ch.files,
     }
   }
   
+  if(length(ch.files)==1){
+    plot_height=c(plot_height[1],0)
+  } else {
+    if(length(plot_height)<length(ch.files)){
+      
+      
+      plot_height=rep(plot_height[1],length(ch.files))
+    }
+  }
+  
+  if(length(ch.files)==1){
+    plot_ticks=c(plot_ticks[1],0)
+  } else {
+    if(length(plot_ticks)<length(ch.files)){
+      
+      
+      plot_ticks=rep(plot_ticks[1],length(ch.files))
+    }
+  }
+  
+  if(length(ch.files)==1){
+    plot_color=c(plot_color[1],"")
+  } else {
+    if(length(plot_color)<length(ch.files)){
+      
+      
+      plot_color=rep(plot_color[1],length(ch.files))
+    }
+  }
+  
+  if(length(ch.files)==1){
+    plot_y_domain=plot_y_domain
+  } else {
+    if(length(plot_y_domain)<length(ch.files)){
+      
+      for(k in 1:length(ch.files)){
+        plot_y_domain[k] = plot_y_domain[1]
+      }
+    }
+  }
+  
+  if(length(ch.files)==1){
+    ref_line=c(ref_line[1],TRUE)
+  } else {
+    if(length(ref_line)<length(ch.files)){
+      ref_line=rep(ref_line[1],length(ch.files))
+    }
+  }
+  
+  if(length(ch.files)==1){
+    refl_pos=c(refl_pos[1],0)
+  } else {
+    if(length(refl_pos)<length(ch.files)){
+      refl_pos=rep(refl_pos[1],length(ch.files))
+    }
+  }
+  
+  if(length(ch.files)==1){
+    refl_color=c(refl_color[1],"")
+  } else {
+    if(length(refl_color)<length(ch.files)){
+      refl_color=rep(refl_color[1],length(ch.files))
+    }
+  }
+  
+  if(length(ch.files)==1){
+    refl_stroke_w=c(refl_stroke_w[1],0)
+  } else {
+    if(length(refl_stroke_w)<length(ch.files)){
+      refl_stroke_w=rep(refl_stroke_w[1],length(ch.files))
+    }
+  }
+  
+  if(length(ch.files)==1){
+    tagColor=c(tagColor[1],"")
+  } else {
+    if(length(tagColor)<length(ch.files)){
+      
+      
+      tagColor=rep(tagColor[1],length(ch.files))
+    }
+  }
+  
+  if(length(ch.files)==1){
+    heat_map=c(heat_map[1],TRUE)
+  } else {
+    if(length(heat_map)<length(ch.files)){
+      
+      
+      heat_map=rep(heat_map[1],length(ch.files))
+    }
+  }
+  
+  if(length(ch.files)==1){
+    text_font_size=c(text_font_size[1],0)
+  } else {
+    if(length(text_font_size)<length(ch.files)){
+      text_font_size=rep(text_font_size[1],length(ch.files))
+    }
+  }
+  
+  
+  if(length(ch.files)==1){
+    plot_filter=plot_filter
+  } else {
+    if(length(plot_filter)<length(ch.files)){
+      
+      for(h in 1:length(ch.files)){
+        plot_filter[h]=plot_filter[1]}
+    }
+  }
   
   chr_width=as.integer(chr_width)
   chr_length=as.integer(chr_length)
@@ -182,7 +355,7 @@ chromoMap <- function(ch.files,
       stop(message("Error: data_type can be either 'numeric' or 'categorical' "))
     }
   }
-  id=c("chromap")
+  
   
   if(!is.list(data_colors)){
     
@@ -203,7 +376,7 @@ chromoMap <- function(ch.files,
   cat("** __**|__ * __* __ * __ __ * __ *|  |  |* __ * __ **\n")
   cat("**|__**|  |*|  *|__|*|  |  |*|__|*|  |  |*|_ |*|__|**\n")
   cat("***********************************************|   **\n")
-  cat("*************** by Lakshay Anand ********************\n")
+  cat("*****************************************************\n")
   cat("OUTPUT: \n")
   cat("Number of Chromosome sets:",length(ch.files),"\n")
   
@@ -267,7 +440,7 @@ chromoMap <- function(ch.files,
              end=chr.data[[g]]$ch_end,
              ch_average= (chr.data[[g]]$ch_end-chr.data[[g]]$ch_start+1)/ch_longest_len,
              n= round((chr.data[[g]]$ch_end-chr.data[[g]]$ch_start+1)/ch_longest_len,2)*100,
-             seq_len=chr.data[[g]]$ch_end-chr.data[[g]]$ch_start+1,stringsAsFactors = F)}
+             seq_len=chr.data[[g]]$ch_end-chr.data[[g]]$ch_start+1,stringsAsFactors = F);}
            
     )
     
@@ -387,16 +560,15 @@ chromoMap <- function(ch.files,
       temp.df=temp.list[[inputData[[h]]$ch_name[i]]]
       
       
-      
       for(j in 1:nrow(temp.df)){
         
         
         if(abs(as.integer(inputData[[h]]$ch_start[i]))>=temp.df[j,1] & abs(as.integer(inputData[[h]]$ch_start[i]))<=temp.df[j,2]){
           
-          assigned.loci[i]=paste(inputData[[h]]$ch_name[i],"-",j,"-",h,sep = "")
+          assigned.loci[i]=paste(id,"-",inputData[[h]]$ch_name[i],"-",j,"-",h,sep = "")
           loci.start[i]=temp.df[j,1]
           loci.end[i]=temp.df[j,2]
-          label[i]=paste("L",inputData[[h]]$ch_name[i],"-",j,"-",h,sep = "")
+          label[i]=paste(id,"-L",inputData[[h]]$ch_name[i],"-",j,"-",h,sep = "")
           
         }
         
@@ -466,7 +638,7 @@ chromoMap <- function(ch.files,
         if(abs(as.integer(inputData[[h]]$ch_start[i]))>=temp.df[j,1] & abs(as.integer(inputData[[h]]$ch_start[i]))<=temp.df[j,2]){
           
           
-          temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],paste(inputData[[h]]$ch_name[i],"-",j,"-",h,sep = ""),as.numeric(temp.df[j,1]),as.numeric(temp.df[j,2]),inputData[[h]]$hlink[i]))
+          temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],paste(id,"-",inputData[[h]]$ch_name[i],"-",j,"-",h,sep = ""),as.numeric(temp.df[j,1]),as.numeric(temp.df[j,2]),inputData[[h]]$hlink[i]))
           
             
             if(abs(as.integer(inputData[[h]]$ch_end[i]))>=temp.df[j,1] & abs(as.integer(inputData[[h]]$ch_end[i]))<=temp.df[j,2]){
@@ -480,10 +652,10 @@ chromoMap <- function(ch.files,
               
               
               if(abs(as.integer(inputData[[h]]$ch_end[i]))>=temp.df[t,1] & abs(as.integer(inputData[[h]]$ch_end[i]))<=temp.df[t,2]){ 
-                temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],paste(inputData[[h]]$ch_name[i],"-",t,"-",h,sep = ""),as.numeric(temp.df[t,1]),as.numeric(temp.df[t,2]),inputData[[h]]$hlink[i]))
+                temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],paste(id,"-",inputData[[h]]$ch_name[i],"-",t,"-",h,sep = ""),as.numeric(temp.df[t,1]),as.numeric(temp.df[t,2]),inputData[[h]]$hlink[i]))
                 break
               } else {
-                temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],paste(inputData[[h]]$ch_name[i],"-",t,"-",h,sep = ""),as.numeric(temp.df[t,1]),as.numeric(temp.df[t,2]),inputData[[h]]$hlink[i])) 
+                temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],paste(id,"-",inputData[[h]]$ch_name[i],"-",t,"-",h,sep = ""),as.numeric(temp.df[t,1]),as.numeric(temp.df[t,2]),inputData[[h]]$hlink[i])) 
               }
               }
             }
@@ -562,8 +734,14 @@ chromoMap <- function(ch.files,
   
   }
   
-
- 
+  for(o in 1:length(inputData)){
+    #print(summary(inputData[[o]]$data))
+    #inputData[[o]]$data = as.double(inputData[[o]]$data)
+    #print("doneee")
+    #print(summary(inputData[[o]]$data))
+  }
+  
+  #print( head(inputData))
   
   #######################################################3
   ########finding min and max for data heatmap
@@ -649,9 +827,9 @@ chromoMap <- function(ch.files,
   } else {
     if(color_scale=="linear" & data_based_color_map){
       
-      
-      if(dc_empty){
       a=data.domain[[p]]
+      if(dc_empty){
+      
     
       if(a[1]<0 & a[2]>0){
         
@@ -660,12 +838,27 @@ chromoMap <- function(ch.files,
           data_colors[[p]]=c("red","white","blue")
           data.domain[[p]]=c(data.domain[[p]][1],0,data.domain[[p]][2])
       } else {
-        if(a[1]>0 & a[2]>0){
+        if(a[1]>=0 & a[2]>=0){
           
-        data_colors[[p]]=c("white","black")
+        data_colors[[p]]=c("white","blue")
        } }
       
-      } 
+      }else {
+        
+        if(dc_one){
+          data_colors[[p]]=data_colors[[1]]
+          
+          
+        }
+        if(a[1]<0 & a[2]>0){
+          
+          
+          
+          
+          data.domain[[p]]=c(data.domain[[p]][1],0,data.domain[[p]][2])
+        }
+        
+        } 
         
         
       }
@@ -674,6 +867,9 @@ chromoMap <- function(ch.files,
        }
   }
   
+  #print("processing done!")
+  #print(data.domain)
+  #print(inputData)
   
   
   # forward options using x
@@ -690,7 +886,6 @@ chromoMap <- function(ch.files,
     chr_length=chr_length,
     chr_col=chr_color,
     heatmap=color_map,
-    v_align=v_align,
     ch_domain=ch.domain,
     lg_x=lg_x,
     lg_y=lg_y,
@@ -704,7 +899,28 @@ chromoMap <- function(ch.files,
     an_col=anno_col,
     ch_text=chr_text,
     legend=legend,
-    aggregate_func=aggregate_func
+    aggregate_func=aggregate_func,
+    plots=plots,
+    tag_filter = tag_filter,
+    plot_height = plot_height,
+    plot_ticks = plot_ticks,
+    plot_color = plot_color,
+    plot_y_domain = plot_y_domain,
+    ref_line = ref_line,
+    refl_pos = refl_pos,
+    refl_color = refl_color,
+    refl_stroke_w = refl_stroke_w,
+    tagColor = tagColor,
+    renderHeat = heat_map,
+    text_font_size = text_font_size,
+    chr_curve = chr_curve,
+    title_font_size = title_font_size,
+    label_font = label_font,
+    label_angle = label_angle,
+    vertical_grid = vertical_grid,
+    grid_array = grid_array,
+    grid_color = grid_color,
+    plot_filter = plot_filter
     
   )
   

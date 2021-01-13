@@ -15,7 +15,7 @@ HTMLWidgets.widget({
         // adding the division with id  required to render plot
         d3.select(el).append("div")
           .attr("id", x.div_id);
-
+           //console.log(el);
         // TODO: code to render the widget, e.g.
         //  var data = HTMLWidgets.dataframeToD3(x.chData);
         var a=[];
@@ -41,7 +41,6 @@ HTMLWidgets.widget({
           x.chr_length,
           x.chr_col,
           x.heatmap,
-          x.v_align,
           x.ch_domain,
           x.lg_x,
           x.lg_y,
@@ -49,7 +48,12 @@ HTMLWidgets.widget({
           x.labels,
           x.div_id,
           x.w,
-          x.h,x.rng,x.heat_col,x.an_col,x.ch_text,x.legend,x.aggregate_func
+          x.h,x.rng,x.heat_col,x.an_col,x.ch_text,x.legend,x.aggregate_func,x.plots,x.tag_filter,
+          x.plot_height,x.plot_ticks,x.plot_color,x.plot_y_domain,
+          x.ref_line,x.refl_pos,x.refl_color,x.refl_stroke_w,x.tagColor,
+          x.renderHeat,x.text_font_size,x.chr_curve,x.title_font_size,
+          x.label_font,x.label_angle,x.grid_array,x.vertical_grid,x.grid_color,
+          x.plot_filter
 
 );
 

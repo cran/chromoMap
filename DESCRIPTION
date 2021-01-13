@@ -1,7 +1,7 @@
 Package: chromoMap
 Type: Package
-Title: Interactive Visualization and Mapping of Chromosomes
-Version: 0.2
+Title: Interactive Genomic Visualization of Biological Data
+Version: 0.3
 Authors@R: person("Lakshay", "Anand", email = "lakshayanand15@gmail.com", role = c("aut", "cre"))
 Maintainer: Lakshay Anand <lakshayanand15@gmail.com>
 Description: Provides interactive, configurable and elegant graphics visualization of the chromosomes or chromosome regions
@@ -14,18 +14,18 @@ Description: Provides interactive, configurable and elegant graphics visualizati
     thousands of genes and can view all mappings easily. Users can investigate the detailed information about the mappings
     (like gene names or total genes mapped on a location) or can view the magnified single or double stranded view of the
     chromosome at a location showing each mapped element in sequential order. The package provide multiple features
-    like visualizing multiple sets, chromosome heat-maps, group annotations, adding hyperlinks, and labelling. 
+    like visualizing multiple sets, chromosome heat-maps, group annotations, adding hyperlinks, and labelling.
     The plots can be saved as HTML documents that can be customized and shared easily. In addition, you can include them in R Markdown or in R 'Shiny' applications.
-Depends: R (>= 3.5.0)
+Depends: R (>= 4.0)
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: false
 Imports: htmltools (>= 0.3.6), htmlwidgets (>= 1.0)
-Suggests: knitr, rmarkdown, shiny
+Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 NeedsCompilation: no
 Author: Lakshay Anand [aut, cre]
 Repository: CRAN
-Packaged: 2019-04-10 19:07:49 UTC; Kakshay Anand
-Date/Publication: 2019-04-10 19:27:11 UTC
+Packaged: 2021-01-12 13:03:03 UTC; laksh
+Date/Publication: 2021-01-13 11:10:02 UTC

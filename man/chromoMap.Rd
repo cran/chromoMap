@@ -4,14 +4,54 @@
 \alias{chromoMap}
 \title{render interactive chromosome plots of any living organism and annotate elements}
 \usage{
-chromoMap(ch.files, data.files, title = c(), ch_gap = 5, ploidy = 1,
-  top_margin = 25, left_margin = 40, chr_width = 6, chr_length = 4,
-  chr_color = c("black"), data_based_color_map = FALSE,
-  v_align = FALSE, segment_annotation = FALSE, lg_x = 0, lg_y = 0,
-  data_type = c("numeric", "categorical"), labels = FALSE,
-  canvas_width = 500, canvas_height = 520, data_colors = list(),
-  anno_col = c("yellow"), chr_text = c(TRUE), legend = c(FALSE),
-  hlinks = FALSE, aggregate_func = c("avg"))
+chromoMap(
+  ch.files,
+  data.files,
+  title = c(),
+  ch_gap = 5,
+  ploidy = 1,
+  top_margin = 25,
+  left_margin = 50,
+  chr_width = 15,
+  chr_length = 4,
+  chr_color = c("black"),
+  data_based_color_map = FALSE,
+  segment_annotation = FALSE,
+  lg_x = 0,
+  lg_y = 0,
+  data_type = c("numeric", "categorical"),
+  labels = FALSE,
+  canvas_width = 500,
+  canvas_height = 520,
+  data_colors = list(),
+  anno_col = c("#10B85F"),
+  chr_text = c(TRUE),
+  legend = c(FALSE),
+  hlinks = FALSE,
+  aggregate_func = c("avg"),
+  plots = c("none"),
+  tag_filter = list(c("none", 0)),
+  plot_height = c(30),
+  plot_ticks = c(4),
+  plot_color = c("blue"),
+  plot_y_domain = list(c(0, 0)),
+  ref_line = c(FALSE),
+  refl_pos = c(0),
+  refl_color = c("grey"),
+  refl_stroke_w = c(2),
+  tagColor = c("red"),
+  heat_map = c(TRUE),
+  text_font_size = c(10),
+  chr_curve = 5,
+  title_font_size = 12,
+  label_font = 9,
+  label_angle = -90,
+  vertical_grid = FALSE,
+  grid_array = c(0, 5, 20, 45, 100),
+  grid_color = "grey",
+  plot_filter = list(c("none", 0)),
+  id = c("chromap")
+)
 }
 \arguments{
 \item{ch.files}{filename(s) containing co-ordinates of the chromosomes to render}
@@ -37,8 +77,6 @@ can be assigned to each set by passing a different color values as vector}
 
 \item{data_based_color_map}{a boolean to tell the plot to use the data provided in file for
 visualizing annotation}
-
-\item{v_align}{a boolean for vertical alignment of plot}
 
 \item{segment_annotation}{a boolean to use segment-annotation algorithm}
 
@@ -66,6 +104,50 @@ visualizing annotation}
 \item{hlinks}{a boolean to use hyperlinks supplied in data}
 
 \item{aggregate_func}{takes either 'sum' or 'avg' to specift aggregate function for each loci}
+
+\item{plots}{specify the type of plot to visualize. takes either 'scatter' , 'bar' or 'tags'.(default: 'none')}
+
+\item{tag_filter}{a list to specify the filter operation and operands for each ploidy.}
+
+\item{plot_height}{specify plot height for each ploidy. default: c(30)}
+
+\item{plot_ticks}{specify number of ticks for plot axis. default: c(4)}
+
+\item{plot_color}{specify the plot color for each ploidy. default: c("blue")}
+
+\item{plot_y_domain}{specify plot y-axis domain. default: list(c(0,0))}
+
+\item{ref_line}{a boolean to use horizontal reference line in plot. default: c(FALSE)}
+
+\item{refl_pos}{specify the position of reference line. default: c(0)}
+
+\item{refl_color}{specify the color of the reference line. default: c("grey")}
+
+\item{refl_stroke_w}{specify the stroke width of the reference line. default: c(2)}
+
+\item{tagColor}{specify the color of tags. default: c("red")}
+
+\item{heat_map}{a boolean to use if chromosome heatmaps are shown. default: c(TRUE),}
+
+\item{text_font_size}{specify chromosome text font-size. default: c(10)}
+
+\item{chr_curve}{specify the chromosome curves at the telomeres or centromere loci. default:5}
+
+\item{title_font_size}{specify the font-size of the title. default:12}
+
+\item{label_font}{specify the font-size of the labels. default:9}
+
+\item{label_angle}{specify the angle of rotation of labels. default: -90}
+
+\item{vertical_grid}{a boolean to use vertical grid lines. default: FALSE}
+
+\item{grid_array}{specify the position(s) of grid line(s). default: c(0,5,20,45,100)}
+
+\item{grid_color}{specify the color of the grid lines. default: "grey"}
+
+\item{plot_filter}{a list specify the plot filter operation, operands, and filter-color for each ploidy.}
+
+\item{id}{specify a unique id doe chromoMap plot. default: c("chromap")}
 }
 \description{
 render an interactive graphics visualization of entire chromosomes
