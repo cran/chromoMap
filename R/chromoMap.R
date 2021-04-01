@@ -4,9 +4,9 @@
 #' @description render an interactive graphics visualization of entire chromosomes
 #'  or chromosomal regions of any living organism. Chromosomal elements such as genes 
 #'  can be annotated easily using this tool.
-#' @param ch.files filename(s) containing co-ordinates of the chromosomes to render 
+#' @param ch.files filename(s) as character vector OR list of data.frames containing co-ordinates of the chromosomes to render 
 #' 
-#' @param data.files filename(s) containing data to annotate on the chromosomes.
+#' @param data.files filename(s) as character vector OR list of data.frames containing data to annotate on the chromosomes.
 #' 
 #' @param title a character string to be used as a title in plot
 #' 
@@ -40,6 +40,9 @@
 #' @param plot_ticks specify number of ticks for plot axis. default: c(4)
 #' @param plot_color specify the plot color for each ploidy. default: c("blue")
 #' @param plot_y_domain specify plot y-axis domain. default: list(c(0,0))
+#' @param scatter.colors specify the group colors for visualizing categories on scatter plot
+#' @param scatter.lg_x specify the x or horizontal distance of scatter plot legend from the origin(bottom right corner) 
+#' @param scatter.lg_y specify the y or vertical distance of scatter plot legend
 #' @param ref_line a boolean to use horizontal reference line in plot. default: c(FALSE)
 #' @param refl_pos specify the position of reference line. default: c(0)
 #' @param refl_color specify the color of the reference line. default: c("grey")
@@ -52,10 +55,21 @@
 #' @param label_font specify the font-size of the labels. default:9
 #' @param label_angle specify the angle of rotation of labels. default: -90
 #' @param vertical_grid a boolean to use vertical grid lines. default: FALSE
-#' @param grid_array specify the position(s) of grid line(s). default: c(0,5,20,45,100)
+#' @param grid_array specify the position(s) of grid line(s) in bp to highlight locations across genome. default: c(0,5000,10000)
 #' @param grid_color specify the color of the grid lines. default: "grey"
+#' @param grid_text specify the text to be attached at the top end of gridlines 
+#' @param grid_text_size specify the font-size of the text 
+#' @param grid_text_y specify the y-distance (from top) for the text
 #' @param plot_filter a list specify the plot filter operation, operands, and filter-color for each ploidy. 
 #' @param id specify a unique id doe chromoMap plot. default: c("chromap")
+#' @param region specify the region of interest for chromosome(s) for zoom-in. Format: "chrName:Ploidy:Start:Stop"
+#' @param show.links a boolean to specify whether links are visualized. default: FALSE
+#' @param loci_links a character vector specifying file name or a data.frame for links input data
+#' @param directed.edges a boolean to visualize directed edges
+#' @param y_chr_scale adjust the chromosome scale along y-axis
+#' @param links.colors specify the links colors
+#' @param links.lg_x specify x or horizontal distance of links legend from the origin
+#' @param links.lg_y specify y or vertical distance of links
 #' 
 #' 
 #' @examples 
@@ -100,8 +114,11 @@
 #' @description required for creating widgets
 #' @import htmlwidgets
 #' @importFrom utils read.table
+#' @importFrom grDevices col2rgb
+#' @importFrom stats na.omit
 #'
 #' @export
+
 chromoMap <- function(ch.files,
                       data.files,
                       title=c(),
@@ -130,6 +147,9 @@ chromoMap <- function(ch.files,
                       plot_ticks=c(4),
                       plot_color=c("blue"),
                       plot_y_domain = list(c(0,0)),
+                      scatter.colors = NULL,
+                      scatter.lg_x = 0,
+                      scatter.lg_y = 0,
                       ref_line=c(FALSE),
                       refl_pos=c(0),
                       refl_color=c("grey"),
@@ -142,10 +162,21 @@ chromoMap <- function(ch.files,
                       label_font = 9,
                       label_angle = -90,
                       vertical_grid = FALSE,
-                      grid_array = c(0,5,20,45,100),
+                      grid_array = c(0,5000,10000),
                       grid_color = "grey",
+                      grid_text = NULL,
+                      grid_text_size = 12,
+                      grid_text_y = 20,
                       plot_filter = list(c("none",0)),
-                      id=c("chromap")
+                      id=c("chromap"),
+                      region = NULL,
+                      show.links = FALSE,
+                      loci_links = "none",
+                      directed.edges = F,
+                      y_chr_scale = 0,
+                      links.colors = NULL,
+                      links.lg_x = 0,
+                      links.lg_y = 0
                       ) {
   
   
@@ -391,7 +422,17 @@ chromoMap <- function(ch.files,
   ch_longest_len=c()
   ch.data=list()
   for(g in 1:ploidy){
+    if(class(ch.files)=='character'){
     ch.data[[g]]= read.table(ch.files[g],sep = "\t",stringsAsFactors = F,header = F)
+    } else if(class(ch.files)=='list'){ch.data[[g]] = ch.files[[g]]}
+    if(length(region)>=1){
+      for(r in 1:length(region)){
+        if(as.numeric(strsplit(region[r],":")[[1]][2])==g){
+          ch.data[[g]][ch.data[[g]][,1]==strsplit(region[r],":")[[1]][1],2] <- as.numeric(strsplit(region[r],":")[[1]][3])
+          ch.data[[g]][ch.data[[g]][,1]==strsplit(region[r],":")[[1]][1],3] <- as.numeric(strsplit(region[r],":")[[1]][4])
+        }
+      }
+    }
     data_col=ncol(ch.data[[g]])
     if(data_col==3){
     ch_longest_len[g]=max(as.numeric(ch.data[[g]][,3]-ch.data[[g]][,2]))
@@ -408,12 +449,23 @@ chromoMap <- function(ch.files,
   
   cnt= c()
   for(g in 1:ploidy){
-    
+    if(class(ch.files)=='character'){
     chr.data[[g]]= read.table(ch.files[g],sep = "\t",stringsAsFactors = F,header = F)
+    } else if(class(ch.files)=='list'){ chr.data[[g]] = ch.files[[g]]}
+    if(length(region)>=1){
+      for(r in 1:length(region)){
+        if(as.numeric(strsplit(region[r],":")[[1]][2])==g){
+          chr.data[[g]][ch.data[[g]][,1]==strsplit(region[r],":")[[1]][1],2] <- as.numeric(strsplit(region[r],":")[[1]][3])
+          chr.data[[g]][ch.data[[g]][,1]==strsplit(region[r],":")[[1]][1],3] <- as.numeric(strsplit(region[r],":")[[1]][4])
+        }
+      }
+    }
+    
+    
     data_col=ncol(chr.data[[g]])
     if(data_col==3){colnames(chr.data[[g]])=c("ch_name","ch_start","ch_end");cnt=FALSE} else {
       if(data_col==4){colnames(chr.data[[g]])=c("ch_name","ch_start","ch_end","cnt_start");cnt=TRUE} else{
-        stop(message("The Input data contains insufficient columns. Please check the vignette for more detail."))
+        stop(message("The Input data contains insufficient columns. Please check the vignette for more details."))
       }
     }
     
@@ -463,6 +515,9 @@ chromoMap <- function(ch.files,
   #creating the ranges for the chromosomes
   mega.list.of.ranges=list()
   ch.name.list=list()
+  tempInput = list()
+  clusters_info = list()
+  
   
   for(g in 1:ploidy){
     
@@ -509,6 +564,7 @@ chromoMap <- function(ch.files,
     mega.list.of.ranges[[g]]=list.of.ranges
     
   }
+  #print(mega.list.of.ranges)
   ########################################################################
   #assigning loc for each gene or elemnt
   cat("Processing data.. \n")
@@ -519,33 +575,69 @@ chromoMap <- function(ch.files,
   if(!segment_annotation){
   
   for(h in 1:ploidy){
-    
+    if(class(data.files)=='character'){
     inputData[[h]]=read.table(data.files[h],sep = "\t",stringsAsFactors = F,header = F)
+    } else if(class(ch.files)=='list'){inputData[[h]] = data.files[[h]]}
+    temp_outer=data.frame()
+    bf_rw=nrow(inputData[[h]])
+    for(cc in 1:nrow(chr.data[[h]])){
+      temp_dff <- inputData[[h]][inputData[[h]][,2]==chr.data[[h]][cc,1],]
+      temp_dff <- temp_dff[(temp_dff[,3]>=chr.data[[h]][cc,2] & temp_dff[,4]<=chr.data[[h]][cc,3]),]
+      temp_outer=rbind.data.frame(temp_outer,temp_dff)
+    }
+    rownames(temp_outer) <- c(1:nrow(temp_outer))
+    inputData[[h]] <- temp_outer
+    af_rw=nrow(inputData[[h]])
     data_col2=ncol(inputData[[h]])
+    if(bf_rw != af_rw){
+      cat("WARNING: ",(bf_rw-af_rw)," out-of-bound annotations are removed in chromosome set ",h,".\n")
+    }
     
-    if(data_col2==4){ inputData[[h]]=cbind.data.frame(inputData[[h]],rep(NA,nrow(inputData[[h]])),rep("http://",nrow(inputData[[h]])));
-      colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink")} else {
-      if(data_col2==5){
-        if(!hlinks){
-        inputData[[h]]=cbind.data.frame(inputData[[h]],rep("http://",nrow(inputData[[h]])));
-        colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink")
-        } else {
-          inputData[[h]]=cbind.data.frame(inputData[[h]],rep(NA,nrow(inputData[[h]])));
-          inputData[[h]]=inputData[[h]][,c(1,2,3,4,6,5)]
-          colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink")
-          
-        }
-        } else{
-          
-          if(data_col2==6){
-            if(hlinks){
-            colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink")
-            }else {stop(message("set the 'hlinks' property to TRUE."))}
-          } else {
-        stop(message("The Input data contains insufficient columns. Please check the vignette for more detail."))
-    }  }
-      }
-    
+    #file select start
+    switch (as.character(data_col2),
+            '4' = {
+              inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                              rep(NA,nrow(inputData[[h]])),
+                                              rep("http://",nrow(inputData[[h]])),
+                                              rep(NA,nrow(inputData[[h]])));
+              colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+            },
+            '5' = {
+              if(!hlinks){
+                inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                                rep("http://",nrow(inputData[[h]])),
+                                                rep(NA,nrow(inputData[[h]])));
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+              } else {
+                inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                                rep(NA,nrow(inputData[[h]])),
+                                                rep(NA,nrow(inputData[[h]])));
+                inputData[[h]]=inputData[[h]][,c(1,2,3,4,6,5,7)]
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+                
+              }
+            },
+            '6' = {
+              if(!hlinks){
+                inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                                rep("http://",nrow(inputData[[h]])));
+                inputData[[h]]=inputData[[h]][,c(1,2,3,4,5,7,6)]
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+              } else {
+                inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                                rep(NA,nrow(inputData[[h]])));
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+                
+              }
+            },
+            '7' = {
+              if(hlinks){
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+              }else {stop(message("set the 'hlinks' property to TRUE."))}
+            },
+            {stop(message("The Input data contains insufficient columns. Please check the vignette for more detail."))}
+    )
+    #file select ends
     cat("Number of annotations in data set ",h,":",nrow(inputData[[h]]),"\n")
     assigned.loci=c()
     loci.start=c()
@@ -581,7 +673,7 @@ chromoMap <- function(ch.files,
     
     new.input=data.frame(assigned.loci,loci.start,loci.end)
     colnames(new.input)=c("loci","loci_start","loci_end")
-    inputData[[h]]=cbind.data.frame(inputData[[h]][,c(1,5,6)],new.input)
+    inputData[[h]]=cbind.data.frame(inputData[[h]][,c(1,5,6,7)],new.input)
     labels.ids[[h]]=label
   }
   
@@ -593,32 +685,64 @@ chromoMap <- function(ch.files,
   
   for(h in 1:ploidy){
     
+    if(class(data.files)=='character'){
     inputData[[h]]=read.table(data.files[h],sep = "\t",stringsAsFactors = F,header = F)
+    } else if(class(ch.files)=='list'){ inputData[[h]]= data.files[[h]]}
+    temp_outer=data.frame()
+    for(cc in 1:nrow(chr.data[[h]])){
+      temp_dff <- inputData[[h]][inputData[[h]][,2]==chr.data[[h]][cc,1],]
+      temp_dff <- temp_dff[(temp_dff[,3]>=chr.data[[h]][cc,2] & temp_dff[,4]<=chr.data[[h]][cc,3]),]
+      temp_outer=rbind.data.frame(temp_outer,temp_dff)
+    }
+    rownames(temp_outer) <- c(1:nrow(temp_outer))
+    inputData[[h]] <- temp_outer
     data_col2=ncol(inputData[[h]])
     
-    if(data_col2==4){ inputData[[h]]=cbind.data.frame(inputData[[h]],rep(NA,nrow(inputData[[h]])),rep("http://",nrow(inputData[[h]])));
-    colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink")} else {
-      if(data_col2==5){
-        if(!hlinks){
-          inputData[[h]]=cbind.data.frame(inputData[[h]],rep("http://",nrow(inputData[[h]])));
-          colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink")
-        } else {
-          inputData[[h]]=cbind.data.frame(inputData[[h]],rep(NA,nrow(inputData[[h]])));
-          inputData[[h]]=inputData[[h]][,c(1,2,3,4,6,5)]
-          colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink")
-          
-        }
-      } else{
-        
-        if(data_col2==6){
-          if(hlinks){
-          colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink")
-          }else{stop(message("set the 'hlinks' property to TRUE."))}
-          
-        } else {
-          stop(message("The Input data contains insufficient columns. Please check the vignette for more detail."))
-        }  }
-    }
+    #file select start
+    switch (as.character(data_col2),
+            '4' = {
+              inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                              rep(NA,nrow(inputData[[h]])),
+                                              rep("http://",nrow(inputData[[h]])),
+                                              rep(NA,nrow(inputData[[h]])));
+              colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+            },
+            '5' = {
+              if(!hlinks){
+                inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                                rep("http://",nrow(inputData[[h]])),
+                                                rep(NA,nrow(inputData[[h]])));
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+              } else {
+                inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                                rep(NA,nrow(inputData[[h]])),
+                                                rep(NA,nrow(inputData[[h]])));
+                inputData[[h]]=inputData[[h]][,c(1,2,3,4,6,5,7)]
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+                
+              }
+            },
+            '6' = {
+              if(!hlinks){
+                inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                                rep("http://",nrow(inputData[[h]])));
+                inputData[[h]]=inputData[[h]][,c(1,2,3,4,5,7,6)]
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+              } else {
+                inputData[[h]]=cbind.data.frame(inputData[[h]],
+                                                rep(NA,nrow(inputData[[h]])));
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+                
+              }
+            },
+            '7' = {
+              if(hlinks){
+                colnames(inputData[[h]])=c("name","ch_name","ch_start","ch_end","data","hlink","cate")
+              }else {stop(message("set the 'hlinks' property to TRUE."))}
+            },
+            {stop(message("The Input data contains insufficient columns. Please check the vignette for more detail."))}
+    )
+    #file select ends
     cat("Number of annotations in data set ",h,":",nrow(inputData[[h]]),"\n")
     temp.input.df=c()
     
@@ -638,7 +762,7 @@ chromoMap <- function(ch.files,
         if(abs(as.integer(inputData[[h]]$ch_start[i]))>=temp.df[j,1] & abs(as.integer(inputData[[h]]$ch_start[i]))<=temp.df[j,2]){
           
           
-          temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],paste(id,"-",inputData[[h]]$ch_name[i],"-",j,"-",h,sep = ""),as.numeric(temp.df[j,1]),as.numeric(temp.df[j,2]),inputData[[h]]$hlink[i]))
+          temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],inputData[[h]]$cate[i],paste(id,"-",inputData[[h]]$ch_name[i],"-",j,"-",h,sep = ""),as.numeric(temp.df[j,1]),as.numeric(temp.df[j,2]),inputData[[h]]$hlink[i]))
           
             
             if(abs(as.integer(inputData[[h]]$ch_end[i]))>=temp.df[j,1] & abs(as.integer(inputData[[h]]$ch_end[i]))<=temp.df[j,2]){
@@ -652,10 +776,10 @@ chromoMap <- function(ch.files,
               
               
               if(abs(as.integer(inputData[[h]]$ch_end[i]))>=temp.df[t,1] & abs(as.integer(inputData[[h]]$ch_end[i]))<=temp.df[t,2]){ 
-                temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],paste(id,"-",inputData[[h]]$ch_name[i],"-",t,"-",h,sep = ""),as.numeric(temp.df[t,1]),as.numeric(temp.df[t,2]),inputData[[h]]$hlink[i]))
+                temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],inputData[[h]]$cate[i],paste(id,"-",inputData[[h]]$ch_name[i],"-",t,"-",h,sep = ""),as.numeric(temp.df[t,1]),as.numeric(temp.df[t,2]),inputData[[h]]$hlink[i]))
                 break
               } else {
-                temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],paste(id,"-",inputData[[h]]$ch_name[i],"-",t,"-",h,sep = ""),as.numeric(temp.df[t,1]),as.numeric(temp.df[t,2]),inputData[[h]]$hlink[i])) 
+                temp.input.df= rbind(temp.input.df,c(as.character(inputData[[h]]$name[i]),inputData[[h]]$data[i],inputData[[h]]$cate[i],paste(id,"-",inputData[[h]]$ch_name[i],"-",t,"-",h,sep = ""),as.numeric(temp.df[t,1]),as.numeric(temp.df[t,2]),inputData[[h]]$hlink[i])) 
               }
               }
             }
@@ -674,15 +798,15 @@ chromoMap <- function(ch.files,
     }
     
     dfff=as.data.frame(temp.input.df,stringsAsFactors = F)
-    colnames(dfff)=c("name","data","loci","loci_start","loci_end","hlink")
+    colnames(dfff)=c("name","data","cate","loci","loci_start","loci_end","hlink")
     if(color_map){
       if(color_scale=="linear"){
     dfff[,2]=as.numeric(dfff[,2])
     } else {if(color_scale=="ordinal"){dfff[,2]=as.character(dfff[,2])}}
     } else {dfff[,2]=rep(NA,nrow(dfff))}
-    dfff[,4]=as.integer(dfff[,4])
+    dfff[,4]=as.character(dfff[,4])
     dfff[,5]=as.integer(dfff[,5])
-    dfff[,6]=as.character(dfff[,6])
+    dfff[,6]=as.integer(dfff[,6])
     inputData[[h]]=unique(dfff)
   }
     
@@ -702,7 +826,7 @@ chromoMap <- function(ch.files,
         
         t=inputData[[i]][inputData[[i]]$name == unique.names[j],]
         
-        labels.id[k]=paste("L",as.character(t[1,3]),sep = "")
+        labels.id[k]=gsub(paste0(id,"-"),paste0(id,"-L"),as.character(t[1,4]))
         k=k+1
         
       } else {
@@ -710,7 +834,7 @@ chromoMap <- function(ch.files,
         t=inputData[[i]][inputData[[i]]$name == unique.names[j],]
         
         for(p in 1:nrow(t)){
-          labels.id[k]=paste("L",as.character(t[round((nrow(t)/2)),3]),sep = "") 
+          labels.id[k]=gsub(paste0(id,"-"),paste0(id,"-L"),as.character(t[round((nrow(t)/2)),4])) 
           k=k+1
         } 
       }
@@ -734,12 +858,12 @@ chromoMap <- function(ch.files,
   
   }
   
-  for(o in 1:length(inputData)){
+  #for(o in 1:length(inputData)){
     #print(summary(inputData[[o]]$data))
     #inputData[[o]]$data = as.double(inputData[[o]]$data)
     #print("doneee")
     #print(summary(inputData[[o]]$data))
-  }
+  #}
   
   #print( head(inputData))
   
@@ -752,7 +876,7 @@ chromoMap <- function(ch.files,
   d.min=c()
   
   for(k in 1:length(inputData)){
-    if(ncol(inputData[[k]])==7){
+    if(ncol(inputData[[k]])==8){
       
       
       d.min=min(inputData[[k]]$data,na.rm = T)
@@ -768,7 +892,7 @@ chromoMap <- function(ch.files,
       
       for(k in 1:length(inputData)){
         d.unik=c()
-        if(ncol(inputData[[k]])==7){
+        if(ncol(inputData[[k]])==8){
           
           
           d.unik=as.character(unique(inputData[[k]]$data))
@@ -789,9 +913,54 @@ chromoMap <- function(ch.files,
   }
   } else {data.domain=rep(0,ploidy)}
   
-  
+  uniq_cates = c()
+  is.plotting.scatter.map = FALSE
+  for(o in 1:length(inputData)){
+    if(length(grep(TRUE,is.na(inputData[[o]]$cate)))>=1){
+      uniq_cates=c(0,0,0)
+    } else { uniq_cates=c(uniq_cates,inputData[[o]]$cate)
+             is.plotting.scatter.map = TRUE
+      }
+  }
+  uniq_cates <- sort(unique(uniq_cates))
+  #print(uniq_cates)
   inline_col=c("red","orange","blue","yellow","purple","black")
+  colors_inline = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)]
+  col_hexa <- function(colr){
+    rgb<-col2rgb(colr)[,1]
+    return(rgb(rgb[1],rgb[2],rgb[3],maxColorValue = 255))
+  }
+  if(length(scatter.colors)==0){
+    scatter.colors = sample(colors_inline,length(uniq_cates))
+    scatter.colors = as.character(vapply(scatter.colors,col_hexa,c("")))
+  } else {
+    scatter.colors = as.character(vapply(scatter.colors,col_hexa,c("")))
+  } 
   
+  links.color.maps = FALSE
+  if(show.links){
+  if(ncol(loci_links)==5){
+    links.color.maps = TRUE
+  }}
+  
+  if(show.links){
+    if(links.color.maps){
+  if(length(links.colors)==0){
+    if(class(loci_links[,5])=="character"){
+    links.colors = sample(colors_inline,length(unique(loci_links[,5])))
+    } else if(class(loci_links[,5])=="numeric" | class(loci_links[,5])=="integer"){
+      links.colors = sample(colors_inline,2)
+    }
+    links.colors = as.character(vapply(links.colors,col_hexa,c("")))
+  } else {
+    links.colors = as.character(vapply(links.colors,col_hexa,c("")))
+  }} else{ 
+    if(length(links.colors)==0){
+    links.colors = sample(colors_inline,1)
+    links.colors = as.character(vapply(links.colors,col_hexa,c("")))
+    } else {links.colors = as.character(vapply(links.colors,col_hexa,c("")))}
+    } }
+  #print(links.colors)
   dc_empty=FALSE
   dc_one=FALSE
   if(length(data_colors)==0){
@@ -801,7 +970,7 @@ chromoMap <- function(ch.files,
     dc_one=TRUE
   }
   
-  
+  #print(data.domain)
   for(p in 1:length(inputData)){
   
   if(color_scale=="ordinal" & data_based_color_map){
@@ -867,9 +1036,69 @@ chromoMap <- function(ch.files,
        }
   }
   
+  if(length(data_colors)>0){
+  for( p in 1:length(inputData)){
+    data_colors[[p]] = as.character(vapply(data_colors[[p]], col_hexa, c("")))
+  }}
   #print("processing done!")
-  #print(data.domain)
+  #print(data_colors)
   #print(inputData)
+  
+  if(!show.links){
+    links_loci = data.frame(src_loci="none",targ_loci="none")
+  } else{
+    if(class(loci_links)=='character'){
+    #nothing
+    } else if(class(loci_links)=='data.frame'){
+      lnks = loci_links
+    }
+    src_loci = c()
+    targ_loci = c()
+    src_loci2 = c()
+    targ_loci2 = c()
+    lnks[,2] = as.numeric(lnks[,2])
+    lnks[,4] = as.numeric(lnks[,4])
+    
+    if(!segment_annotation){
+    for(i in 1:nrow(lnks)){
+      src_loci[i]=inputData[[lnks[i,2]]][inputData[[lnks[i,2]]]$name == lnks[i,1],][1,5]
+      targ_loci[i]=inputData[[lnks[i,4]]][inputData[[lnks[i,4]]]$name == lnks[i,3],][1,5]
+    }
+    if(ncol(lnks)==5){
+    links_loci = data.frame(src_loci,targ_loci,lnk_nm = paste0(lnks[,1],"-",lnks[,3]),
+                            link_data=lnks[,5],stringsAsFactors = F)
+    links_loci = na.omit(links_loci)
+    } else {if(ncol(lnks)==4){
+      links_loci = data.frame(src_loci,targ_loci,lnk_nm = paste0(lnks[,1],"-",lnks[,3]),
+                              link_data=rep("NA",nrow(lnks)),stringsAsFactors = F)
+    }}
+    } else {
+      links_loci = data.frame()
+      for(i in 1:nrow(lnks)){
+        s_tdf = inputData[[lnks[i,2]]][inputData[[lnks[i,2]]]$name == lnks[i,1],]
+        s_rw = nrow(s_tdf)
+        src_loci[i] = s_tdf[1,4]
+        src_loci2[i] = s_tdf[s_rw,4]
+        t_tdf=inputData[[lnks[i,4]]][inputData[[lnks[i,4]]]$name == lnks[i,3],]
+        t_rw = nrow(t_tdf)
+        targ_loci[i] = t_tdf[1,4]
+        targ_loci2[i] = t_tdf[t_rw,4]
+      }
+      
+      if(ncol(lnks)==5){
+        links_loci = data.frame(src_loci,src_loci2,targ_loci,targ_loci2,lnk_nm = paste0(lnks[,1],"-",lnks[,3]),
+                                link_data=lnks[,5],stringsAsFactors = F)
+        links_loci = na.omit(links_loci)
+      } else {if(ncol(lnks)==4){
+        links_loci = data.frame(src_loci,src_loci2,targ_loci,targ_loci2,lnk_nm = paste0(lnks[,1],"-",lnks[,3]),
+                                link_data=rep("NA",nrow(lnks)),stringsAsFactors = F)
+      }}
+      
+    }
+    
+  }
+  
+  #print(links_loci)
   
   
   # forward options using x
@@ -920,7 +1149,24 @@ chromoMap <- function(ch.files,
     vertical_grid = vertical_grid,
     grid_array = grid_array,
     grid_color = grid_color,
-    plot_filter = plot_filter
+    plot_filter = plot_filter,
+    loci_links = links_loci,
+    uniq_cates = uniq_cates,
+    scatter_col = scatter.colors,
+    grid_text = grid_text,
+    grid_text_size = grid_text_size,
+    grid_text_y = grid_text_y,
+    scatter_mapping = is.plotting.scatter.map,
+    scatter_lg_x = scatter.lg_x,
+    scatter_lg_y = scatter.lg_y,
+    show_links = show.links,
+    seg_anno = segment_annotation,
+    directed_edges = directed.edges,
+    y_chr_scale = y_chr_scale,
+    links_colors = links.colors,
+    links_lg_x = links.lg_x,
+    links_lg_y = links.lg_y,
+    links_color_maps=links.color.maps
     
   )
   

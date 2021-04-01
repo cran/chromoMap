@@ -20,6 +20,7 @@ HTMLWidgets.widget({
         //  var data = HTMLWidgets.dataframeToD3(x.chData);
         var a=[];
         var b=[];
+        var c=HTMLWidgets.dataframeToD3(x.loci_links);
         for(i=0;i<x.chData.length;i++){
 
           a[i]=HTMLWidgets.dataframeToD3(x.chData[i]);
@@ -28,6 +29,10 @@ HTMLWidgets.widget({
 
           b[i]=HTMLWidgets.dataframeToD3(x.nLoci[i]);
         }
+        
+
+          
+        
 
         chromoMap(a,
           b,
@@ -53,7 +58,10 @@ HTMLWidgets.widget({
           x.ref_line,x.refl_pos,x.refl_color,x.refl_stroke_w,x.tagColor,
           x.renderHeat,x.text_font_size,x.chr_curve,x.title_font_size,
           x.label_font,x.label_angle,x.grid_array,x.vertical_grid,x.grid_color,
-          x.plot_filter
+          x.plot_filter,c,x.uniq_cates,x.scatter_col,x.grid_text,x.grid_text_size,x.grid_text_y,
+          x.scatter_mapping,x.scatter_lg_x,x.scatter_lg_y,
+          x.show_links,x.seg_anno,x.directed_edges,x.y_chr_scale,
+          x.links_colors,x.links_lg_x,x.links_lg_y,x.links_color_maps
 
 );
 

@@ -44,6 +44,7 @@ Some of the prominent features of the package are:
 - visualizing polyploidy simultaneously on the same plot.
 - annotating groups of elements as distinct colors using `chromoMap-DiscreteColorMaps`.
 - visualizing multi-omics data associated with features using a variety of plots like `chromoMap-HeatMaps` (for chromsome heat-maps), `chromoMap-Bar` (bar plots on chromosomes), `chromoMap-Scatter` (scatter plot on chromosomes), and `epi-tags` (condition-based tagging of chromosome loci).
+- Visualize correlations between genomic features using the `chromLinks plots`
 - adjusting chromosome range or visualizing chromosome regions such as genes
 - adding labels to the plot
 - adding hyperlinks to each element
@@ -94,6 +95,7 @@ Once you have chromosome co-ordinates in file, the next thing is to have data fo
 - **Element Start**: A numeric specifying element start position.
 - **Element End**: A numeric specifying element end position.
 - **Data(optional)**:  A numeric or character specifying the data value.
+- **Secondary Data(optional)**:  A vector specifying the data value.useful for multi-factor scatter plots.
 - **Hyperlinks(optional)**: a character specifying the URL of the element. 
 
 your annotation file should look like:
@@ -181,6 +183,22 @@ Annotation file with both positive and negative data.
 
 head(read.table(anno_file_2,sep = "\t"))
 ```
+
+
+### R objects as chromoMap Inputs
+
+`chromoMap` now supports passing R objects directly as input instead of filenames. The chromosome cordinate input (first argument) and annotations(second argument) can either be passed as a `character vector` specifying the filenames or as a `list of data.frames` with one data.frame per ploidy. 
+
+```{r eval=F}
+# passing data.frames directly instead of files
+chromoMap(list(chr.data),list(anno.data))
+# for polyploidy
+chromoMap(list(chr.data1,chr.data2),
+          list(anno.data1,anno.data2),ploidy = 2)
+
+```
+
+Note: The format of the data is the same. column names or row names is irrelevant and can be anything but the order should be same as described above (for files).
 
 ## My first `chromoMap`
 
@@ -515,6 +533,254 @@ chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",
 
 ```
 
+### multi-factor scatter plots
+
+In order to visualize a second factor onto the scatter plot, you can now use a special `plot_filter` option. The input data specifying the categories should be passed a secondary data column in addition to the primary data. 
+
+```{r echo=F}
+  anno_file_3 <- read.table("data/ANNO_DATA_FOR_CATSCATTER.txt")
+```
+
+the input data file now looks like:
+
+```{r}
+head(anno_file_3)
+```
+
+You can specify the colors of each category by using the `scatter.colors` argument. The legend is automatically displayed and can be adjusted with `scatter.lg_x` and `scatter.lg_y` arguments.
+
+```{r,eval=FALSE}
+chromoMap(chr_file_1,anno_file_3,
+          data_based_color_map = T,
+          data_type = "numeric",
+          plots = "scatter",
+          plot_filter = list(c("col","byCategory")),
+          scatter.colors = c("pink3","orange3","purple","blue2"))
+```
+
+
+```{r, echo=F, fig.height=3.5}
+chromoMap(chr_file_1,"data/ANNO_DATA_FOR_CATSCATTER.txt",data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="cmapnew10",lg_y = 50,
+          plots = "scatter",left_margin = 60,plot_filter = list(c("col","byCategory")),plot_height = 40,
+          scatter.colors = c("pink3","orange3","purple","blue2"),canvas_width = 600,
+          scatter.lg_y = 100)
+
+```
+
+NOTE: As of now, only categorical data is supported as secondary data for this feature.
+
+
+<br><br>
+
+## chromLinks Plots
+
+`chromLinks` plots can be used to visualize links or connections between any two features or loci. The two features can be located on the same chromosome or on different chromosomes from the same or different ploidies. The links data needs to be passed separately as a data.frame where each row represents a connection between two features and the columns represents:
+
+- column 1: name of the first feature (as used in annotation data) [type: character]
+- column 2: ploidy of the first feature. [type: numeric]
+- column 3: name of the second feature [ type: character]
+- column 4: ploidy of the second feature. [type: numeric]
+- column 5(optional): associated data for the link [type: numeric or character]
+
+```{r echo=F}
+chr_file <- "data/SLINK_chr.txt"
+anno_file <- "data/SLINK_anno.txt"
+link_data <- read.csv("data/SLINK22.csv",header = T)
+```
+
+The input data.frame should look like:
+
+```{r}
+head(link_data)
+```
+
+
+NOTE: The ploidy columns in the data represents the ploidy of the genomic feature. Since, chromoMap allows using duplicate names in different ploidies, it is important to specify correct ploidy for a given feature. 
+
+`chromoMap` allows two ways to visualize the links between two features:
+
+### Visualizing links as Edges
+
+`chromoMap` annotates the features by using either of the two annotation algorithms, namely, point-annotation and segment-annotation(discussed above). For the former type, links between two annotated features are visualized as `edges`. To use the links-visualization feature, you need to set the `show.links` argument to `TRUE` and pass the links data.frame through the `loci_links` argument. 
+
+```{r eval=F}
+chromoMap(chr_file, anno_file,
+          # main arguments 
+          show.links = T,
+          loci_links = link_data[,c(1:4)],
+          links.colors = "red2",
+          #plot adjustments
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          )
+```
+
+```{r echo=F,fig.height=4.0}
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data[,c(1:4)],
+          #plot adjustments
+          links.colors = "red2",
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew1"
+          )
+```
+
+
+#### color mapping links data
+
+The numeric or character data associated with the links can be color coded. You just need to pass the data as fifth column. The legends are automatically displayed. use `links.lg_x` and `links.lg_y` arguments to adjust the legends.
+
+```{r eval=F}
+chromoMap(chr_file, anno_file,
+          # main arguments 
+          show.links = T,
+          loci_links = link_data,
+          links.colors = c("red2","blue2"),
+          #plot adjustments
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          links.lg_y = 300
+          )
+```
+
+```{r echo=F,fig.height=4.0}
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data,
+          #plot adjustments
+          links.colors =  c("red2","blue2"),
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew2",
+          canvas_width = 600,
+          links.lg_y = 300
+          )
+```
+
+
+
+and also categorical data:
+
+```{r echo=F}
+link_data <- read.csv("data/SLINK_link2.csv",header = F)
+```
+
+```{r eval=F}
+chromoMap(chr_file, anno_file,
+          # main arguments 
+          show.links = T,
+          loci_links = link_data,
+          links.colors = c("red2","blue2","orange3","purple"),
+          #plot adjustments
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          )
+```
+
+```{r echo=F,fig.height=4.0}
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data,
+          #plot adjustments
+          links.colors =  c("red2","blue2","orange3","purple"),
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew3",
+          canvas_width = 600,
+          links.lg_y = 300
+          )
+```
+
+#### directed edges
+
+there is also an option to visualize the arrow-heads on the links to signify direction. Use the `directed.edges` boolean argument.
+
+```{r eval=F}
+chromoMap(chr_file, anno_file,
+          # main arguments 
+          show.links = T,
+          loci_links = link_data,
+          links.colors = c("red2","blue2","orange3","purple"),
+          directed.edges = T,
+          #plot adjustments
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          )
+```
+
+```{r echo=F,fig.height=4.0}
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data,
+          #plot adjustments
+          links.colors =  c("red2","blue2","orange3","purple"),
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew33",
+          canvas_width = 600,
+          links.lg_y = 300,
+          directed.edges = T
+          )
+```
+
+
+### Visualizing links as Chords
+
+For segement-annotation plots, where features are  usually large size and are annotated as segments of the chromosomes, the links are visualized as `chords`.
+
+```{r echo=F}
+chr_file <- "data/TEST_chr.txt"
+anno_file <- "data/TEST_anno.txt"
+link_data <- read.csv("data/TEST_LINKSSS.csv",header = T)
+```
+
+```{r eval=F}
+chromoMap(chr_file, anno_file,
+          # main arguments 
+          segment_annotation = T,
+          show.links = T,
+          loci_links = link_data,
+          links.colors = c("orange3","purple","green2"),
+          #plot adjustments
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          )
+```
+
+```{r echo=F,fig.height=4.0}
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data,
+          segment_annotation = T,
+          #plot adjustments
+          links.colors =  c("orange3","purple","green2"),
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew4",
+          canvas_width = 600,
+          links.lg_y = 300
+          )
+```
+
+
+
+Note: the colors can be passed using the `links.colors` argument that takes a character vector specifying color(s) for the links or data maps. For numeric data pass two colors and for categorical data pass as many colors as there are categories.
+
+<br>
+<br>
+
 
 
 ## Customizing chromoMaps
@@ -637,6 +903,11 @@ chromoMap("chromosome_file.txt","annotation_file.txt",
 
 **TIP**: setting this property to 0 will remove the curves that render the chromosomes as rectangles.
 
+### Chromsome scale y-position
+
+You can adjust the y or vertical position of the chromosome scale using the `y_chr_scale` argument.
+
+
 ### Chromosome text
 Well, the chromosome text will be taken from file you have provided. The only thing I thought might be useful is to enable or disable text individually for each ploidy. This is done by using `chr_text` parameter.
 ```{r,eval=FALSE}
@@ -662,6 +933,13 @@ The `id` argument allows to uniquely identify the plot. This feature is importan
 chromoMap("chromosome_file.txt","annotation_file.txt",
           id="my_plot_1") 
 ```
+
+### Automatic color assignments
+
+As a test feature, `chromoMap` now automatically assigns random color values if the colors are not passed manually. the color values are randomly selected and change every time you plot. I would still recommend using the manual color assignments. 
+
+Also, now you can use R color names such as 'red3' as color inputs.
+
 
 ## Customizing Data Plots
 
@@ -762,10 +1040,10 @@ chromoMap(chr_file_1,anno_file_2,
           plot_y_domain = list(c(-5,5)))
 ```
 
-## Vertical Grid Lines
+## Highlighting with grid lines
 
 
-vertical grid lines can be used to highlight specific regions of the chromosomes. You can add any number of grid-lines to the plot. Set the `vertical_grid` argument to `TRUE`. You can add multiple grid lines by specifying a vector of positions of the lines. The following example demonstrate the use of grid lines where 5 grid lines are added at positions 0,50,100,250, and 400. The plot also demonstrate the use of other customization options.
+vertical grid lines can be used to highlight specific regions of the chromosomes. You can add any number of grid-lines to the plot. Set the `vertical_grid` argument to `TRUE`. You can add multiple grid lines by specifying a vector of positions(in bp) within the max range of the plot(depicted by the horizontal chromosome scale). The following example demonstrate the use of grid lines where 5 grid lines are added at random genomic positions 1,54,100,420, and 621(the entire scale is 1k bp wide). The plot also demonstrate the use of other customization options.
 
 
 ```{r,eval=FALSE}
@@ -778,8 +1056,9 @@ chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),
           plot_color = c("green","red"),
           ref_line = T,
           refl_pos = 20,
+          #gridline arguments
           vertical_grid = T,
-          grid_array = c(0,50,100,250,400))
+          grid_array = c(1,54,100,420,621))
 ```
 
 
@@ -791,11 +1070,117 @@ chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),data_based_color_m
           ref_line = T,
           refl_pos = 20,
           vertical_grid = T,
-          grid_array = c(0,50,100,250,400),left_margin = 60)
+          grid_array = c(1,54,100,420,621),left_margin = 60)
 
 ```
 
-You can also change the grid lines color using the `grid_color` argument.
+
+#### adding labels to grid lines
+
+You can also add text/labels for individual grid line. the text will added at the top end of the grid-line and needs to be passed as an array(vector) of texts for each corresponding position passed in `grid_array`. Use the `grid_text` argument to pass the text, `grid_text_size` to specify the text font-size, `grid_text_y` to adjust the vertical position of the texts, and `grid_color` to change color of grid-lines.
+
+
+```{r,eval=FALSE}
+chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),
+          ploidy = 2
+          data_based_color_map = T,
+          data_type = "numeric",
+          plots = c("bar","scatter"),
+          plot_height = 40,
+          plot_color = c("green","red"),
+          ref_line = T,
+          refl_pos = 20,
+          #gridline arguments
+          vertical_grid = T,
+          grid_array = c(1,54,100,420,621),
+          grid_text = c("","","mark 1","region 1",""))
+```
+
+
+```{r, echo=F, fig.height=3.5}
+chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),data_based_color_map = T,data_type = "numeric",canvas_height = 400,id="cnew4125",ploidy = 2,
+          plots = c("bar","scatter"),
+          plot_height = 40,
+          plot_color = c("green","red"),
+          ref_line = T,
+          refl_pos = 20,
+          vertical_grid = T,
+          grid_array = c(1,54,100,420,621),left_margin = 60
+          ,grid_text = c("","","mark 1","region 1",""))
+
+```
+
+
+Note: for the grid-lines for which no text was displayed an empty string `""` is added corresponding to the grid-line position. The length of `grid_array` and `grid_text` should match.
+
+## Quick Zoom-in 
+
+`chromoMap` now supports a quick zoom-in feature that allow the users to zoom in on a specific region of interest on any chromosome. The region information is passed with the `region` argument which is a character vector containing region(s) in the following format:
+
+`c("<chromsome name>:<ploidy>:<region start>:<region stop>")`
+
+eg. c("chr1:1:5142689:6478512") 
+
+#### highlighting a region
+
+```{r,eval=FALSE}
+chromoMap(chr_file_1,anno_file_2,
+          data_based_color_map = T,
+          data_type = "numeric",
+          plots = "scatter",
+          #highlighting a region on chr1
+          vertical_grid = T,
+          grid_array = c(550,754))
+```
+
+
+```{r, echo=F, fig.height=3.5}
+chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="new7777",lg_y = 50,
+          plots = "scatter",left_margin = 60,plot_height = 40,
+          vertical_grid = T,
+          grid_array = c(550,754))
+
+```
+
+#### zooming in on that region
+
+```{r,eval=FALSE}
+chromoMap(chr_file_1,anno_file_2,
+          data_based_color_map = T,
+          data_type = "numeric",
+          plots = "scatter",
+          #zoom in
+          region = c("chr1:1:550:754"))
+```
+
+
+```{r, echo=F, fig.height=3.5}
+chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="new77894",lg_y = 50,
+          plots = "scatter",left_margin = 60,plot_height = 40,
+           region = c("chr1:1:550:754"))
+
+```
+
+Note: the scale of the chromosomes will be updated based on their new length. The region zoom could have been done by modifying the chromosome range in the input chromosome files but this argument provides a quick option to view a region of interest without changing the master chromosome data.
+
+multiple regions can also be passed as:
+
+```{r,eval=FALSE}
+chromoMap(chr_file_1,anno_file_2,
+          data_based_color_map = T,
+          data_type = "numeric",
+          plots = "scatter",
+          #zoom in
+          region = c("chr1:1:550:754","chr2:1:221:450"))
+```
+
+
+```{r, echo=F, fig.height=3.5}
+chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="newh745994",lg_y = 50,
+          plots = "scatter",left_margin = 60,plot_height = 40,
+           region = c("chr1:1:550:754","chr2:1:221:450"))
+
+```
 
 
 ## Legends

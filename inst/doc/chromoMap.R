@@ -50,6 +50,14 @@ head(read.table(anno_file_1,sep = "\t"))
 
 head(read.table(anno_file_2,sep = "\t"))
 
+## ----eval=F-------------------------------------------------------------------
+#  # passing data.frames directly instead of files
+#  chromoMap(list(chr.data),list(anno.data))
+#  # for polyploidy
+#  chromoMap(list(chr.data1,chr.data2),
+#            list(anno.data1,anno.data2),ploidy = 2)
+#  
+
 ## ---- eval=F------------------------------------------------------------------
 #  library(chromoMap)
 #  chromoMap(chr_file_1,anno_file_1)
@@ -206,6 +214,176 @@ chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",
           plots = "scatter",left_margin = 60,plot_filter = list(c("lt",0,"red")),plot_height = 40)
 
 
+## ----echo=F-------------------------------------------------------------------
+  anno_file_3 <- read.table("data/ANNO_DATA_FOR_CATSCATTER.txt")
+
+## -----------------------------------------------------------------------------
+head(anno_file_3)
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap(chr_file_1,anno_file_3,
+#            data_based_color_map = T,
+#            data_type = "numeric",
+#            plots = "scatter",
+#            plot_filter = list(c("col","byCategory")),
+#            scatter.colors = c("pink3","orange3","purple","blue2"))
+
+## ---- echo=F, fig.height=3.5--------------------------------------------------
+chromoMap(chr_file_1,"data/ANNO_DATA_FOR_CATSCATTER.txt",data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="cmapnew10",lg_y = 50,
+          plots = "scatter",left_margin = 60,plot_filter = list(c("col","byCategory")),plot_height = 40,
+          scatter.colors = c("pink3","orange3","purple","blue2"),canvas_width = 600,
+          scatter.lg_y = 100)
+
+
+## ----echo=F-------------------------------------------------------------------
+chr_file <- "data/SLINK_chr.txt"
+anno_file <- "data/SLINK_anno.txt"
+link_data <- read.csv("data/SLINK22.csv",header = T)
+
+## -----------------------------------------------------------------------------
+head(link_data)
+
+## ----eval=F-------------------------------------------------------------------
+#  chromoMap(chr_file, anno_file,
+#            # main arguments
+#            show.links = T,
+#            loci_links = link_data[,c(1:4)],
+#            links.colors = "red2",
+#            #plot adjustments
+#            ch_gap = 50,
+#            y_chr_scale = 100,
+#            top_margin = 100,
+#            )
+
+## ----echo=F,fig.height=4.0----------------------------------------------------
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data[,c(1:4)],
+          #plot adjustments
+          links.colors = "red2",
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew1"
+          )
+
+## ----eval=F-------------------------------------------------------------------
+#  chromoMap(chr_file, anno_file,
+#            # main arguments
+#            show.links = T,
+#            loci_links = link_data,
+#            links.colors = c("red2","blue2"),
+#            #plot adjustments
+#            ch_gap = 50,
+#            y_chr_scale = 100,
+#            top_margin = 100,
+#            links.lg_y = 300
+#            )
+
+## ----echo=F,fig.height=4.0----------------------------------------------------
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data,
+          #plot adjustments
+          links.colors =  c("red2","blue2"),
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew2",
+          canvas_width = 600,
+          links.lg_y = 300
+          )
+
+## ----echo=F-------------------------------------------------------------------
+link_data <- read.csv("data/SLINK_link2.csv",header = F)
+
+## ----eval=F-------------------------------------------------------------------
+#  chromoMap(chr_file, anno_file,
+#            # main arguments
+#            show.links = T,
+#            loci_links = link_data,
+#            links.colors = c("red2","blue2","orange3","purple"),
+#            #plot adjustments
+#            ch_gap = 50,
+#            y_chr_scale = 100,
+#            top_margin = 100,
+#            )
+
+## ----echo=F,fig.height=4.0----------------------------------------------------
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data,
+          #plot adjustments
+          links.colors =  c("red2","blue2","orange3","purple"),
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew3",
+          canvas_width = 600,
+          links.lg_y = 300
+          )
+
+## ----eval=F-------------------------------------------------------------------
+#  chromoMap(chr_file, anno_file,
+#            # main arguments
+#            show.links = T,
+#            loci_links = link_data,
+#            links.colors = c("red2","blue2","orange3","purple"),
+#            directed.edges = T,
+#            #plot adjustments
+#            ch_gap = 50,
+#            y_chr_scale = 100,
+#            top_margin = 100,
+#            )
+
+## ----echo=F,fig.height=4.0----------------------------------------------------
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data,
+          #plot adjustments
+          links.colors =  c("red2","blue2","orange3","purple"),
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew33",
+          canvas_width = 600,
+          links.lg_y = 300,
+          directed.edges = T
+          )
+
+## ----echo=F-------------------------------------------------------------------
+chr_file <- "data/TEST_chr.txt"
+anno_file <- "data/TEST_anno.txt"
+link_data <- read.csv("data/TEST_LINKSSS.csv",header = T)
+
+## ----eval=F-------------------------------------------------------------------
+#  chromoMap(chr_file, anno_file,
+#            # main arguments
+#            segment_annotation = T,
+#            show.links = T,
+#            loci_links = link_data,
+#            links.colors = c("orange3","purple","green2"),
+#            #plot adjustments
+#            ch_gap = 50,
+#            y_chr_scale = 100,
+#            top_margin = 100,
+#            )
+
+## ----echo=F,fig.height=4.0----------------------------------------------------
+chromoMap(chr_file, anno_file,
+          show.links = T,
+          loci_links = link_data,
+          segment_annotation = T,
+          #plot adjustments
+          links.colors =  c("orange3","purple","green2"),
+          ch_gap = 50,
+          y_chr_scale = 100,
+          top_margin = 100,
+          id="cnew4",
+          canvas_width = 600,
+          links.lg_y = 300
+          )
+
 ## ----eval=FALSE---------------------------------------------------------------
 #  chromoMap("chromosome_file.txt","annotation_file.txt",
 #            canvas_width = 600,
@@ -338,8 +516,9 @@ chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",
 #            plot_color = c("green","red"),
 #            ref_line = T,
 #            refl_pos = 20,
+#            #gridline arguments
 #            vertical_grid = T,
-#            grid_array = c(0,50,100,250,400))
+#            grid_array = c(1,54,100,420,621))
 
 ## ---- echo=F, fig.height=3.5--------------------------------------------------
 chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),data_based_color_map = T,data_type = "numeric",canvas_height = 400,id="cmap23",ploidy = 2,
@@ -349,7 +528,78 @@ chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),data_based_color_m
           ref_line = T,
           refl_pos = 20,
           vertical_grid = T,
-          grid_array = c(0,50,100,250,400),left_margin = 60)
+          grid_array = c(1,54,100,420,621),left_margin = 60)
+
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),
+#            ploidy = 2
+#            data_based_color_map = T,
+#            data_type = "numeric",
+#            plots = c("bar","scatter"),
+#            plot_height = 40,
+#            plot_color = c("green","red"),
+#            ref_line = T,
+#            refl_pos = 20,
+#            #gridline arguments
+#            vertical_grid = T,
+#            grid_array = c(1,54,100,420,621),
+#            grid_text = c("","","mark 1","region 1",""))
+
+## ---- echo=F, fig.height=3.5--------------------------------------------------
+chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),data_based_color_map = T,data_type = "numeric",canvas_height = 400,id="cnew4125",ploidy = 2,
+          plots = c("bar","scatter"),
+          plot_height = 40,
+          plot_color = c("green","red"),
+          ref_line = T,
+          refl_pos = 20,
+          vertical_grid = T,
+          grid_array = c(1,54,100,420,621),left_margin = 60
+          ,grid_text = c("","","mark 1","region 1",""))
+
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap(chr_file_1,anno_file_2,
+#            data_based_color_map = T,
+#            data_type = "numeric",
+#            plots = "scatter",
+#            #highlighting a region on chr1
+#            vertical_grid = T,
+#            grid_array = c(550,754))
+
+## ---- echo=F, fig.height=3.5--------------------------------------------------
+chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="new7777",lg_y = 50,
+          plots = "scatter",left_margin = 60,plot_height = 40,
+          vertical_grid = T,
+          grid_array = c(550,754))
+
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap(chr_file_1,anno_file_2,
+#            data_based_color_map = T,
+#            data_type = "numeric",
+#            plots = "scatter",
+#            #zoom in
+#            region = c("chr1:1:550:754"))
+
+## ---- echo=F, fig.height=3.5--------------------------------------------------
+chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="new77894",lg_y = 50,
+          plots = "scatter",left_margin = 60,plot_height = 40,
+           region = c("chr1:1:550:754"))
+
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap(chr_file_1,anno_file_2,
+#            data_based_color_map = T,
+#            data_type = "numeric",
+#            plots = "scatter",
+#            #zoom in
+#            region = c("chr1:1:550:754","chr2:1:221:450"))
+
+## ---- echo=F, fig.height=3.5--------------------------------------------------
+chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="newh745994",lg_y = 50,
+          plots = "scatter",left_margin = 60,plot_height = 40,
+           region = c("chr1:1:550:754","chr2:1:221:450"))
 
 
 ## ----eval=FALSE---------------------------------------------------------------

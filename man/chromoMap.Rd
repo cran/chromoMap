@@ -35,6 +35,9 @@ chromoMap(
   plot_ticks = c(4),
   plot_color = c("blue"),
   plot_y_domain = list(c(0, 0)),
+  scatter.colors = NULL,
+  scatter.lg_x = 0,
+  scatter.lg_y = 0,
   ref_line = c(FALSE),
   refl_pos = c(0),
   refl_color = c("grey"),
@@ -47,16 +50,27 @@ chromoMap(
   label_font = 9,
   label_angle = -90,
   vertical_grid = FALSE,
-  grid_array = c(0, 5, 20, 45, 100),
+  grid_array = c(0, 5000, 10000),
   grid_color = "grey",
+  grid_text = NULL,
+  grid_text_size = 12,
+  grid_text_y = 20,
   plot_filter = list(c("none", 0)),
-  id = c("chromap")
+  id = c("chromap"),
+  region = NULL,
+  show.links = FALSE,
+  loci_links = "none",
+  directed.edges = F,
+  y_chr_scale = 0,
+  links.colors = NULL,
+  links.lg_x = 0,
+  links.lg_y = 0
 )
 }
 \arguments{
-\item{ch.files}{filename(s) containing co-ordinates of the chromosomes to render}
+\item{ch.files}{filename(s) as character vector OR list of data.frames containing co-ordinates of the chromosomes to render}
 
-\item{data.files}{filename(s) containing data to annotate on the chromosomes.}
+\item{data.files}{filename(s) as character vector OR list of data.frames containing data to annotate on the chromosomes.}
 
 \item{title}{a character string to be used as a title in plot}
 
@@ -117,6 +131,12 @@ visualizing annotation}
 
 \item{plot_y_domain}{specify plot y-axis domain. default: list(c(0,0))}
 
+\item{scatter.colors}{specify the group colors for visualizing categories on scatter plot}
+
+\item{scatter.lg_x}{specify the x or horizontal distance of scatter plot legend from the origin(bottom right corner)}
+
+\item{scatter.lg_y}{specify the y or vertical distance of scatter plot legend}
+
 \item{ref_line}{a boolean to use horizontal reference line in plot. default: c(FALSE)}
 
 \item{refl_pos}{specify the position of reference line. default: c(0)}
@@ -141,13 +161,35 @@ visualizing annotation}
 
 \item{vertical_grid}{a boolean to use vertical grid lines. default: FALSE}
 
-\item{grid_array}{specify the position(s) of grid line(s). default: c(0,5,20,45,100)}
+\item{grid_array}{specify the position(s) of grid line(s) in bp to highlight locations across genome. default: c(0,5000,10000)}
 
 \item{grid_color}{specify the color of the grid lines. default: "grey"}
+
+\item{grid_text}{specify the text to be attached at the top end of gridlines}
+
+\item{grid_text_size}{specify the font-size of the text}
+
+\item{grid_text_y}{specify the y-distance (from top) for the text}
 
 \item{plot_filter}{a list specify the plot filter operation, operands, and filter-color for each ploidy.}
 
 \item{id}{specify a unique id doe chromoMap plot. default: c("chromap")}
+
+\item{region}{specify the region of interest for chromosome(s) for zoom-in. Format: "chrName:Ploidy:Start:Stop"}
+
+\item{show.links}{a boolean to specify whether links are visualized. default: FALSE}
+
+\item{loci_links}{a character vector specifying file name or a data.frame for links input data}
+
+\item{directed.edges}{a boolean to visualize directed edges}
+
+\item{y_chr_scale}{adjust the chromosome scale along y-axis}
+
+\item{links.colors}{specify the links colors}
+
+\item{links.lg_x}{specify x or horizontal distance of links legend from the origin}
+
+\item{links.lg_y}{specify y or vertical distance of links}
 }
 \description{
 render an interactive graphics visualization of entire chromosomes
