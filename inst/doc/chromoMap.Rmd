@@ -37,13 +37,15 @@ knitr::opts_chunk$set(
 **Author**: [Lakshay Anand](mailto:lakshayanand15@gmail.com)
 
 
-`chromoMap` provides interactive, configurable and elegant graphics visualization of chromosomes or chromosomal regions allowing users to map chromosome features (like genes,SNPs etc.) onto the chromosome and visualize the feature-associated data (like multi-omics data). Each chromosome is composed of loci(representing a specific range determined based on chromosome length) that, on hover, shows details about the annotations in that locus range. The plots can be saved as HTML documents that can be shared easily. In addition, you can include them in R Markdown or in R Shiny applications. 
+`chromoMap` provides interactive, configurable and elegant graphics visualization of chromosomes or chromosomal regions allowing users to map chromosome features (like genes,SNPs etc.) onto the chromosome and visualize the feature-associated data (like multi-omics data). Each chromosome is composed of genomic-windows(representing a specific range determined based on chromosome length) that, on hover, shows details about the annotations in that locus range. The plots can be saved as HTML documents that can be shared easily. In addition, you can include them in R Markdown or in R Shiny applications. 
 
 Some of the prominent features of the package are:
 
 - visualizing polyploidy simultaneously on the same plot.
+- Create high-resolution maps.
 - annotating groups of elements as distinct colors using `chromoMap-DiscreteColorMaps`.
-- visualizing multi-omics data associated with features using a variety of plots like `chromoMap-HeatMaps` (for chromsome heat-maps), `chromoMap-Bar` (bar plots on chromosomes), `chromoMap-Scatter` (scatter plot on chromosomes), and `epi-tags` (condition-based tagging of chromosome loci).
+- visualizing multi-omics data associated with features using a variety of plots like `chromoMap-HeatMaps` (for chromsome heat-maps), `chromoMap-Bar` (bar plots on chromosomes), `chromoMap-Scatter` (scatter plot on chromosomes), and `epi-tags` (condition-based tagging of chromosome genomic-windows).
+- Create `2-Dimensional Chromosome` plots.
 - Visualize correlations between genomic features using the `chromLinks plots`
 - adjusting chromosome range or visualizing chromosome regions such as genes
 - adding labels to the plot
@@ -151,7 +153,7 @@ chr_file_1 <- paste0(my_path,chr_file_1)
 chr_file_2 <- paste0(my_path,chr_file_2)
 anno_file_1 <-paste0(my_path,anno_file_1)
 anno_file_2 <-paste0(my_path,anno_file_2)
-
+anno_file_cate <- paste0(my_path,"discrete_colormap.txt")
 
 
 ```
@@ -218,7 +220,7 @@ chromoMap(chr_file_1,anno_file_1,canvas_height = 200,id="cmap1")
 
 This will create a plot with default properties. 
 
-that's it! you have created a simple annotation plot. now hover over the annotated loci to see the magic. you should see a tooltip describing:
+that's it! you have created a simple annotation plot. now hover over the annotated windows to see the magic. you should see a tooltip describing:
 
 - the range of the selected locus in bp
 - the count showing total elements mapped at this locus
@@ -290,6 +292,76 @@ here's a hypothetical example(exon regions of the genes g1,g2 and g3).
 
 </center>
 
+## High-Resolution Maps
+
+`chromoMap` now supports construction of high resolution maps using by either scaling the number of windows per chromosome or by choosing arbitrary window size.
+
+### Window Scaling
+
+`chromoMap` determines the number of genomic windows (and their size/range) constructed for each chromosome based on the length of the chromosomes. By default, 100 windows are created for the longest chromosome and all other chromosomes will have #windows based on the proportion of their length to the longest chromosome. 
+
+A new feature now allow to scale the number of windows which consequently reduces the genomic window size. The number of windows will be a multiple of 100 for the longest chromosome while the #windows for rest of chromosomes and the window size are algorithmically determined. Use the argument `n_win.factor` to increase the scale as described below. Also, set the argument `win.summary.display` to `TRUE` to output window summary to console.
+
+
+```{r, eval=F}
+# default value
+library(chromoMap)
+chromoMap(chr_file_1,anno_file_1,
+          n_win.factor = 1,
+          win.summary.display=T)
+
+```
+
+```{r, echo=F, fig.height=2}
+chromoMap(chr_file_1,anno_file_1,canvas_height = 200,
+          id="cmapRR1",n_win.factor = 1,
+          win.summary.display=T)
+
+```
+
+In the window summary, 'nwin' is number of windows while 'min' and 'max' is the minimum and maximum size of the window. In cases where chromsomes cannot be split into equal size windows, two window sizes differeing by 1nt are used (as in the following case).
+
+<br>
+
+Now, increasing the #windows 3 times #windows for the longest chromsome.
+
+```{r, eval=F}
+library(chromoMap)
+chromoMap(chr_file_1,anno_file_1,
+          n_win.factor = 3,
+          win.summary.display = T)
+
+```
+
+```{r, echo=F, fig.height=2,fig.width=1}
+chromoMap(chr_file_1,anno_file_1,canvas_height = 200,id="cmapRR2",
+          n_win.factor = 3,win.summary.display = T)
+
+```
+
+### Fixed-Window
+
+Alternately, users can now visualize the `chromoMap` plots with a fixed window size. In order to use fixed-window method, set the `fixed.window` argument to `TRUE` and then specify the `window.size`.
+
+
+```{r, eval=F}
+library(chromoMap)
+chromoMap(chr_file_1,anno_file_1,
+          fixed.window = T,
+          window.size = 5,
+          win.summary.display = T)
+
+```
+
+```{r, echo=F, fig.height=2,fig.width=1}
+chromoMap(chr_file_1,anno_file_1,canvas_height = 200,id="cmapRRu2",
+          fixed.window = T,window.size = 5,win.summary.display = T)
+
+```
+
+**IMPORTANT** In fixed window analysis, the last window of the chromosome will be removed if the chromosome cannot be equally divided using the given window size. Users can include the last window by setting the argument `remove.last.window ` to `FALSE`. Note that in the case when last windows are included, the last windows may not be exactly to the scale.
+
+
 ## Data-based annotation plots
 
 Huge volume of biological data is being produced in today's world. I thought it would be nice to visualize the data associated with the chromosome regions or elements/features. You can do this by creating data-based color annotation plots in `chromoMap`. Before going forward let's know about the data types chromoMap can handle. You can use either numeric  data or character/categorical data for annotations. For the type of data type you are using, you need to set the argument `data_type` to either `numeric` or `categorical`. Also, to use this category of plot, you need to set `data_based_color_map` to `TRUE`.Now let's explore the various types of plots you can create using `chromoMap`.
@@ -310,14 +382,18 @@ chromoMap("chromosome_file.txt","annotation_file.txt",
 ```
 
 ```{r, echo=F, fig.height=3}
-chromoMap(chr_file_1,"data/discrete_colormap.txt",data_based_color_map = T,data_type = "categorical",legend = T,canvas_height = 250,id="cmap310",data_colors = list(c("orange","yellow")))
+chromoMap(chr_file_1,"data/discrete_colormap.txt",data_based_color_map = T,data_type = "categorical",legend = T,canvas_height = 250,id="cmap310",data_colors = list(c("orange","yellow")),
+          lg_x = 15)
 
 ```
 
+#### Manually setting the order of categories
 
+You can now manually set the order of categories by using the `discrete.domain` argument which should be passed as vector with categories as character strings.(e.g `discrete.domain` = `c("type2","type1")` in above example.)
 
 
 The best thing is, it can also create a legend for each group with labels used by you as group names. [see more under 'legends' section]
+
 
 
 ### chromoMap-HeatMaps
@@ -341,7 +417,7 @@ chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",
 
 #### Data Aggregation
 
-Well, remember that chromosomal locus in the plot is a range, and more than one elements can be annotated in that range. So, for the data assignment of the loci where multiple elements are mapped, there is an aggregation method that allows you to control how data is aggregated/summarized for a given locus. The data for each locus will be determined by `aggregate_func` argument which can take `avg` for average (default) ,`sum` for summation of data values of all elements mapped on that locus, `min` , `max`, and `count`.
+Well, remember that chromosomal locus in the plot is a range, and more than one elements can be annotated in that range. So, for the data assignment of the windows where multiple elements are mapped, there is an aggregation method that allows you to control how data is aggregated/summarized for a given locus. The data for each locus will be determined by `aggregate_func` argument which can take `avg` for average (default) ,`sum` for summation of data values of all elements mapped on that locus, `min` , `max`,`median` and `count`.
 
 
 So, if you want to use the sum function:
@@ -362,12 +438,17 @@ chromoMap(c("chromosome_file_set_1.txt","chromosome_file_set_2.txt")
           ,aggregate_func = c("avg","sum"))
 ```
 
-Note: If only one element is annotated per loci, than the loci will take the element's data value.
+Note: If only one element is annotated per window, than the windows will take the element's data value.
+
+#### Manually changing the data domain for heatmap
+Please note that for construction of heatmaps, the domain (min-max) used for colors is based on the min-max values of the data. You can manually set the domain by using the `numeric.domain` argument.It is a list of vectors where each vector specify the domain for the ploidy.
+
+e.g `numeric.domain` = `list(c(0,100))` or for diploid use `numeric.domain` = `list(c(0,100),c(-60,60))`.
 
 
 ### chromoMap-Bar Plots
 
-In addition to visualizing numeric data as heat colors on the chromosomes, chromoMap allows creating data charts over the annotated loci. `chromoMap-Bar` plot can be used to visualize annotated data as barplots. You will need to use the `plots` argument to specify the type of data charts you wish to visualize.
+In addition to visualizing numeric data as heat colors on the chromosomes, chromoMap allows creating data charts over the annotated windows. `chromoMap-Bar` plot can be used to visualize annotated data as barplots. You will need to use the `plots` argument to specify the type of data charts you wish to visualize.
 
 ```{r,eval=FALSE}
 chromoMap(chr_file_1,anno_file_1,
@@ -384,7 +465,7 @@ chromoMap(chr_file_1,anno_file_1,data_based_color_map = T,data_type = "numeric",
 ```
 
 
-The bars represents the `aggregate_function` values for the loci. You can customize the chromoMap-Bar plots using various properties described under `customizing Data-Plots` section.
+The bars represents the `aggregate_function` values for the windows. You can customize the chromoMap-Bar plots using various properties described under `customizing Data-Plots` section.
 
 You can also turn off the heatmap feature to selectively visualize the `chromoMap-Bar` plots ( applicable for all of the plots discussed in the subsequent section). For that, set the `heat_map` argument to `FALSE`.
 
@@ -427,7 +508,7 @@ chromoMap(chr_file_1,anno_file_2,data_based_color_map = T,data_type = "numeric",
 
 ### epi-tags
 
-`epi-tags` are special plots that allow to add `tags` over annotated loci. 
+`epi-tags` are special plots that allow to add `tags` over annotated windows. 
 
 ```{r,eval=FALSE}
 chromoMap(chr_file_1,anno_file_2,
@@ -469,7 +550,7 @@ kable(gggg)
 ```
 
 
-For instance, to tag the loci with negative number values:
+For instance, to tag the windows with negative number values:
 
 
 ```{r,eval=FALSE}
@@ -547,7 +628,7 @@ the input data file now looks like:
 head(anno_file_3)
 ```
 
-You can specify the colors of each category by using the `scatter.colors` argument. The legend is automatically displayed and can be adjusted with `scatter.lg_x` and `scatter.lg_y` arguments.
+You can specify the colors of each category by using the `ch2D.colors` argument. The legend is automatically displayed and can be adjusted with `ch2D.lg_x` and `ch2D.lg_y` arguments.
 
 ```{r,eval=FALSE}
 chromoMap(chr_file_1,anno_file_3,
@@ -555,15 +636,15 @@ chromoMap(chr_file_1,anno_file_3,
           data_type = "numeric",
           plots = "scatter",
           plot_filter = list(c("col","byCategory")),
-          scatter.colors = c("pink3","orange3","purple","blue2"))
+          ch2D.colors = c("pink3","orange3","purple","blue2"))
 ```
 
 
 ```{r, echo=F, fig.height=3.5}
 chromoMap(chr_file_1,"data/ANNO_DATA_FOR_CATSCATTER.txt",data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="cmapnew10",lg_y = 50,
           plots = "scatter",left_margin = 60,plot_filter = list(c("col","byCategory")),plot_height = 40,
-          scatter.colors = c("pink3","orange3","purple","blue2"),canvas_width = 600,
-          scatter.lg_y = 100)
+          ch2D.colors = c("pink3","orange3","purple","blue2"),canvas_width = 600,
+          ch2D.lg_y = 100)
 
 ```
 
@@ -572,9 +653,78 @@ NOTE: As of now, only categorical data is supported as secondary data for this f
 
 <br><br>
 
+## 2D-Chromosome Plots
+Users can now construct a new kind of plot called  `2D-Chromosome` plots. The plot basically visualize annotations in 2D. The X-axis represent the chromosome split into genomic windows, while the y-axis visualize the annotations within the respective genomic windows with their positions relative to the start of the genomic windows.
+
+2D-Chr plots can be constructed by simply using the `chr.2D.plot` argument which takes Boolean value.
+
+```{r,eval=FALSE}
+chromoMap(chr_file_1,anno_file_2,
+          chr.2D.plot = T)
+```
+
+
+```{r, echo=F, fig.height=3.5}
+chromoMap(chr_file_1,anno_file_2,chr.2D.plot = T,canvas_height = 300,id="cmaphyd10")
+
+```
+
+Not only that, you can visualize the feature-associated data as heat-maps.
+
+### 2D-Chr Heatmaps
+
+You need to use the `plot_filter` argument to create the heat-maps.
+
+#### for Numeric Data
+
+For numeric data, you need to pass a vector for `plot_filter` specifying that you need to color by numeric data: `c("col","byNumber")`. Please not as used previously, `plot_filter` is a list which takes values per ploidy, that means that you can construct 2D-chr plot in as multiple-ploidy or even along with other types of plots like "scatter/bars". You can use `plot_height` to adjust the height of the plot.
+
+
+```{r,eval=FALSE}
+chromoMap(chr_file_1,anno_file_2,
+          chr.2D.plot = T,
+          plot_filter = list(c("col","byNumber")))
+```
+
+
+```{r, echo=F, fig.height=3.5}
+chromoMap(chr_file_1,anno_file_2,chr.2D.plot = T,canvas_height = 300,id="cmaphiygd10",plot_filter = list(c("col","byNumber")),
+          lg_x = 10)
+
+```
+
+For numeric data, the legend can be adjusted using `lg_x` or `lg_y` arguments just as you adjust he legends for chromoMap-scatter/bar plots. Also, To change the colors use `data_colors` argument.
+
+#### for Categorical Data
+
+You can also visualize categorical data as heatmap by using `c("col","byCategory")` in `plot_filter`. I am using the following data for anotation that has two groups "type1" and "type2".
+
+```{r}
+head(read.table(anno_file_cate))
+```
+
+```{r,eval=FALSE}
+chromoMap(chr_file_1,anno_file_cate,
+          chr.2D.plot = T,
+          plot_filter = list(c("col","byCategory")),
+          ch2D.colors = c("red","blue"))
+```
+
+
+```{r, echo=F, fig.height=3.5}
+chromoMap(chr_file_1,anno_file_cate,chr.2D.plot = T,canvas_height = 300,id="cmtrphiygd10",plot_filter = list(c("col","byCategory")),
+                                                                                  ch2D.colors = c("red","blue"),ch2D.lg_x = 15
+          )
+
+```
+
+For categorical data, you can use `ch2D.lg_x` or `ch2D.lg_y` to adjust the legends. You can use `ch2D.colors` to manually set the colors for each category. Also `ch2D.cat.order` to manually set the order of categories.
+
+Also, although not recommended you can adjust height of annotation bars in 2D-Chr plots by using `ann.h` argument.
+
 ## chromLinks Plots
 
-`chromLinks` plots can be used to visualize links or connections between any two features or loci. The two features can be located on the same chromosome or on different chromosomes from the same or different ploidies. The links data needs to be passed separately as a data.frame where each row represents a connection between two features and the columns represents:
+`chromLinks` plots can be used to visualize links or connections between any two features or windows. The two features can be located on the same chromosome or on different chromosomes from the same or different ploidies. The links data needs to be passed separately as a data.frame where each row represents a connection between two features and the columns represents:
 
 - column 1: name of the first feature (as used in annotation data) [type: character]
 - column 2: ploidy of the first feature. [type: numeric]
@@ -659,7 +809,7 @@ chromoMap(chr_file, anno_file,
           top_margin = 100,
           id="cnew2",
           canvas_width = 600,
-          links.lg_y = 300
+          links.lg_y = 30
           )
 ```
 
@@ -695,7 +845,7 @@ chromoMap(chr_file, anno_file,
           top_margin = 100,
           id="cnew3",
           canvas_width = 600,
-          links.lg_y = 300
+          links.lg_y = 30
           )
 ```
 
@@ -728,7 +878,7 @@ chromoMap(chr_file, anno_file,
           top_margin = 100,
           id="cnew33",
           canvas_width = 600,
-          links.lg_y = 300,
+          links.lg_y = 30,
           directed.edges = T
           )
 ```
@@ -770,7 +920,7 @@ chromoMap(chr_file, anno_file,
           top_margin = 100,
           id="cnew4",
           canvas_width = 600,
-          links.lg_y = 300
+          links.lg_y = 30
           )
 ```
 
@@ -790,7 +940,7 @@ Note: the colors can be passed using the `links.colors` argument that takes a ch
 
 ### width and height
 
-You can configure the dimensions(width and height) of the plot by using the parameter `canvas_width` and `canvas_height`. 
+You can configure the dimensions(width and height) of the plot by using the parameter `canvas_width` and `canvas_height`. From version 0.4.1 onwards, chromoMap automatically adjust the width and height to fit the plot and provide vertical and horizontal srolling in case of overflow.
 
 ```{r,eval=FALSE}
 chromoMap("chromosome_file.txt","annotation_file.txt",
@@ -893,7 +1043,7 @@ chromoMap("chromosome_file.txt","annotation_file.txt",
 
 ### Chromosome curves
 
-The curves appearing at the telo-meres (chromosome end loci) and in centromere locus can also be adjusted using the `chr_curve` argument.
+The curves appearing at the telo-meres (chromosome end windows) and in centromere locus can also be adjusted using the `chr_curve` argument.
 
 ```{r,eval=FALSE}
 chromoMap("chromosome_file.txt","annotation_file.txt",
@@ -924,6 +1074,45 @@ chromoMap(c("chromosome_file_set_1.txt","chromosome_file_set_2.txt")
 ```
 
 you can adjust the text font size using `text_font_size` parameter.
+
+### Interactivity
+
+You can now disable/enable interactivity for chromosomes by using the `interactivity` argument.
+
+```{r,eval=FALSE}
+chromoMap("chromosome_file.txt","annotation_file.txt",
+          interactivity = F)
+```
+
+### Chr Scale Suffix
+
+You can change the 'suffix' value used in the chromosome scale. By default it uses 'bp' but you can set to any other value or remove it by passing empty string "".
+
+```{r,eval=FALSE}
+chromoMap("chromosome_file.txt","annotation_file.txt",
+          scale.suffix = "cM")
+```
+### Chr Scale Ticks
+
+You can set the number of ticks for chr scale using `chr.scale.ticks` argument.
+
+### Show/hide Chromosomes
+You can choose to show/hide the chromosomes for each ploidy by using the `display.chr` argument. It can be different for different ploidy like you can pass `c(F,T)` to this argument indicating that you only want to hide the first ploidy chromosomes. NOTE that plots will still be visible and you can adjust the plots with `plot_shift` argument.
+
+```{r,eval=FALSE}
+chromoMap("chromosome_file.txt","annotation_file.txt",
+          display.chr = c(F))
+```
+
+### Guides
+
+You can display guides in the background using the `guides` argument. Guides will help separate each genomic window. You can also set the color by `guides_color`.
+
+```{r,eval=FALSE}
+chromoMap("chromosome_file.txt","annotation_file.txt",
+          guides = T,
+          guides_color = "black")
+```
 
 ### plot ID
 
@@ -1039,6 +1228,9 @@ chromoMap(chr_file_1,anno_file_2,
           plot_ticks = 3,
           plot_y_domain = list(c(-5,5)))
 ```
+
+### Plot y Labels
+You can now set y-axis labels for the plots for each ploidy by using `plot.y.labels` argument. Adjust the x nd y position of the labels by using `plot.y.lab.x` and `plot.y.lab.y` argument respectively. Set the size with `plot.y.lab.size`.
 
 ## Highlighting with grid lines
 
@@ -1218,7 +1410,9 @@ chromoMap("chromosome_file.txt","annotation_file.txt",
           lg_y = 250)
 ```
 
+### Legend labels
 
+For numeric-data plots like scatter/bar use `plot.legend.labels` for each ploidy. For categorical data legends, use `cat.legend.label`. Note that for categorical data plots, only one legend is shown with all categories.
 
 
 ## Labellings
@@ -1287,9 +1481,15 @@ chromoMap("chromosome_file.txt","annotation_file.txt",
           hlinks=T)
 ```
 
-## Exporting chromoMaps 
+## Export to PNG/SVG/HTML 
 
 The `RStudio` allows the option to export the graphics, shown in its viewer's pane ,as either a static image or a web page. Use this feature to either save chromoMaps as static images and include them into your documents or papers, or export interactive plots as standalone-html to include them as supplementary materials in publications.
+
+### In-built Export Options
+
+From version 0.4.1, chromoMap has an in-built exporting options that provide buttons to export the plot as either PNG or SVG. In order to use it, set the `export.options` argument to `TRUE`. You will see export buttons at the bottom of plot.
+
+**IMPORTANT** The buttons might not work in RStudios' viewer pane. you can first export the plot as "WEB Page/HTML" and then view it in a broweser like Chrome.
 
 
 
@@ -1342,6 +1542,11 @@ LICENSE version 3).
 
 ## Contact 
 You are welcome to send feedback or bug reports through e-mail lakshayanan15@gmail.com
+
+## Cite
+`chromoMap` is now published in BMC Bioinformatics journal. Please visit the site for citing options.
+
+[link to publication](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-021-04556-z)
 
 ## Session Info
 ```{r}

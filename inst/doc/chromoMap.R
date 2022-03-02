@@ -30,7 +30,7 @@ chr_file_1 <- paste0(my_path,chr_file_1)
 chr_file_2 <- paste0(my_path,chr_file_2)
 anno_file_1 <-paste0(my_path,anno_file_1)
 anno_file_2 <-paste0(my_path,anno_file_2)
-
+anno_file_cate <- paste0(my_path,"discrete_colormap.txt")
 
 
 
@@ -91,6 +91,45 @@ chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),
 #  chromoMap("chromosome_file.txt","annotation_file.txt",segment_annotation = T)
 #  
 
+## ---- eval=F------------------------------------------------------------------
+#  # default value
+#  library(chromoMap)
+#  chromoMap(chr_file_1,anno_file_1,
+#            n_win.factor = 1,
+#            win.summary.display=T)
+#  
+
+## ---- echo=F, fig.height=2----------------------------------------------------
+chromoMap(chr_file_1,anno_file_1,canvas_height = 200,
+          id="cmapRR1",n_win.factor = 1,
+          win.summary.display=T)
+
+
+## ---- eval=F------------------------------------------------------------------
+#  library(chromoMap)
+#  chromoMap(chr_file_1,anno_file_1,
+#            n_win.factor = 3,
+#            win.summary.display = T)
+#  
+
+## ---- echo=F, fig.height=2,fig.width=1----------------------------------------
+chromoMap(chr_file_1,anno_file_1,canvas_height = 200,id="cmapRR2",
+          n_win.factor = 3,win.summary.display = T)
+
+
+## ---- eval=F------------------------------------------------------------------
+#  library(chromoMap)
+#  chromoMap(chr_file_1,anno_file_1,
+#            fixed.window = T,
+#            window.size = 5,
+#            win.summary.display = T)
+#  
+
+## ---- echo=F, fig.height=2,fig.width=1----------------------------------------
+chromoMap(chr_file_1,anno_file_1,canvas_height = 200,id="cmapRRu2",
+          fixed.window = T,window.size = 5,win.summary.display = T)
+
+
 ## ----eval=F-------------------------------------------------------------------
 #  chromoMap("chromosome_file.txt","annotation_file.txt",
 #            data_based_color_map = T,
@@ -99,7 +138,8 @@ chromoMap(c(chr_file_1,chr_file_1),c(anno_file_1,anno_file_2),
 #  
 
 ## ---- echo=F, fig.height=3----------------------------------------------------
-chromoMap(chr_file_1,"data/discrete_colormap.txt",data_based_color_map = T,data_type = "categorical",legend = T,canvas_height = 250,id="cmap310",data_colors = list(c("orange","yellow")))
+chromoMap(chr_file_1,"data/discrete_colormap.txt",data_based_color_map = T,data_type = "categorical",legend = T,canvas_height = 250,id="cmap310",data_colors = list(c("orange","yellow")),
+          lg_x = 15)
 
 
 ## ----eval=FALSE---------------------------------------------------------------
@@ -226,13 +266,46 @@ head(anno_file_3)
 #            data_type = "numeric",
 #            plots = "scatter",
 #            plot_filter = list(c("col","byCategory")),
-#            scatter.colors = c("pink3","orange3","purple","blue2"))
+#            ch2D.colors = c("pink3","orange3","purple","blue2"))
 
 ## ---- echo=F, fig.height=3.5--------------------------------------------------
 chromoMap(chr_file_1,"data/ANNO_DATA_FOR_CATSCATTER.txt",data_based_color_map = T,data_type = "numeric",canvas_height = 300,id="cmapnew10",lg_y = 50,
           plots = "scatter",left_margin = 60,plot_filter = list(c("col","byCategory")),plot_height = 40,
-          scatter.colors = c("pink3","orange3","purple","blue2"),canvas_width = 600,
-          scatter.lg_y = 100)
+          ch2D.colors = c("pink3","orange3","purple","blue2"),canvas_width = 600,
+          ch2D.lg_y = 100)
+
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap(chr_file_1,anno_file_2,
+#            chr.2D.plot = T)
+
+## ---- echo=F, fig.height=3.5--------------------------------------------------
+chromoMap(chr_file_1,anno_file_2,chr.2D.plot = T,canvas_height = 300,id="cmaphyd10")
+
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap(chr_file_1,anno_file_2,
+#            chr.2D.plot = T,
+#            plot_filter = list(c("col","byNumber")))
+
+## ---- echo=F, fig.height=3.5--------------------------------------------------
+chromoMap(chr_file_1,anno_file_2,chr.2D.plot = T,canvas_height = 300,id="cmaphiygd10",plot_filter = list(c("col","byNumber")),
+          lg_x = 10)
+
+
+## -----------------------------------------------------------------------------
+head(read.table(anno_file_cate))
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap(chr_file_1,anno_file_cate,
+#            chr.2D.plot = T,
+#            plot_filter = list(c("col","byCategory")),
+#            ch2D.colors = c("red","blue"))
+
+## ---- echo=F, fig.height=3.5--------------------------------------------------
+chromoMap(chr_file_1,anno_file_cate,chr.2D.plot = T,canvas_height = 300,id="cmtrphiygd10",plot_filter = list(c("col","byCategory")),
+                                                                                  ch2D.colors = c("red","blue"),ch2D.lg_x = 15
+          )
 
 
 ## ----echo=F-------------------------------------------------------------------
@@ -291,7 +364,7 @@ chromoMap(chr_file, anno_file,
           top_margin = 100,
           id="cnew2",
           canvas_width = 600,
-          links.lg_y = 300
+          links.lg_y = 30
           )
 
 ## ----echo=F-------------------------------------------------------------------
@@ -320,7 +393,7 @@ chromoMap(chr_file, anno_file,
           top_margin = 100,
           id="cnew3",
           canvas_width = 600,
-          links.lg_y = 300
+          links.lg_y = 30
           )
 
 ## ----eval=F-------------------------------------------------------------------
@@ -347,7 +420,7 @@ chromoMap(chr_file, anno_file,
           top_margin = 100,
           id="cnew33",
           canvas_width = 600,
-          links.lg_y = 300,
+          links.lg_y = 30,
           directed.edges = T
           )
 
@@ -381,7 +454,7 @@ chromoMap(chr_file, anno_file,
           top_margin = 100,
           id="cnew4",
           canvas_width = 600,
-          links.lg_y = 300
+          links.lg_y = 30
           )
 
 ## ----eval=FALSE---------------------------------------------------------------
@@ -445,6 +518,23 @@ chromoMap(chr_file, anno_file,
 #            ,c("annotation_file_set_1.txt","annotation_file_set_2.txt"),
 #            ploidy = 2,
 #            chr_text = c(T,F))
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            interactivity = F)
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            scale.suffix = "cM")
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            display.chr = c(F))
+
+## ----eval=FALSE---------------------------------------------------------------
+#  chromoMap("chromosome_file.txt","annotation_file.txt",
+#            guides = T,
+#            guides_color = "black")
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  chromoMap("chromosome_file.txt","annotation_file.txt",

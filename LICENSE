@@ -1,7 +1,7 @@
 The chromoMap package as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC
 LICENSE version 3).
 
-Copyright 2021 Lakshay Anand
+Copyright 2022 Lakshay Anand
 All rights reserved.
 
 
@@ -14,7 +14,7 @@ The chromoMap package also includes the following open source software component
 
 d3 license
 ----------------------------------------------------------------------
-Copyright 2010-2021 Mike Bostock
+Copyright 2010-2022 Mike Bostock
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,

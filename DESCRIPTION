@@ -1,7 +1,7 @@
 Package: chromoMap
 Type: Package
 Title: Interactive Genomic Visualization of Biological Data
-Version: 0.3.1
+Version: 0.4.1
 Authors@R: person("Lakshay", "Anand", email = "lakshayanand15@gmail.com", role = c("aut", "cre"))
 Maintainer: Lakshay Anand <lakshayanand15@gmail.com>
 Description: Provides interactive, configurable and elegant graphics visualization of the chromosomes or chromosome regions
@@ -19,13 +19,12 @@ Description: Provides interactive, configurable and elegant graphics visualizati
 Depends: R (>= 4.0)
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
-LazyData: false
 Imports: htmltools (>= 0.3.6), htmlwidgets (>= 1.0)
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 NeedsCompilation: no
 Author: Lakshay Anand [aut, cre]
 Repository: CRAN
-Packaged: 2021-04-01 00:35:53 UTC; laksh
-Date/Publication: 2021-04-01 14:30:06 UTC
+Packaged: 2022-03-02 20:06:36 UTC; lakshay-anand
+Date/Publication: 2022-03-02 20:50:02 UTC

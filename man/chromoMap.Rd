@@ -21,11 +21,12 @@ chromoMap(
   lg_y = 0,
   data_type = c("numeric", "categorical"),
   labels = FALSE,
-  canvas_width = 500,
-  canvas_height = 520,
+  canvas_width = NULL,
+  canvas_height = NULL,
   data_colors = list(),
   anno_col = c("#10B85F"),
   chr_text = c(TRUE),
+  discrete.domain = NULL,
   legend = c(FALSE),
   hlinks = FALSE,
   aggregate_func = c("avg"),
@@ -35,9 +36,10 @@ chromoMap(
   plot_ticks = c(4),
   plot_color = c("blue"),
   plot_y_domain = list(c(0, 0)),
-  scatter.colors = NULL,
-  scatter.lg_x = 0,
-  scatter.lg_y = 0,
+  ch2D.colors = NULL,
+  ch2D.cat.order = NULL,
+  ch2D.lg_x = 0,
+  ch2D.lg_y = 0,
   ref_line = c(FALSE),
   refl_pos = c(0),
   refl_color = c("grey"),
@@ -64,7 +66,29 @@ chromoMap(
   y_chr_scale = 0,
   links.colors = NULL,
   links.lg_x = 0,
-  links.lg_y = 0
+  links.lg_y = 0,
+  n_win.factor = 1,
+  chr.scale.ticks = 5,
+  export.options = F,
+  fixed.window = F,
+  window.size = NULL,
+  win.summary.display = F,
+  remove.last.window = T,
+  guides = F,
+  guides_color = "lightgrey",
+  ann.h = 1,
+  chr.2D.plot = F,
+  display.chr = T,
+  plot.shift = c(1),
+  plot.legend.labels = c(""),
+  cat.legend.label = "",
+  plot.y.labels = c(""),
+  plot.y.lab.x = 10,
+  plot.y.lab.y = 0,
+  plot.y.lab.size = 15,
+  scale.suffix = "bp",
+  numeric.domain = NULL,
+  interactivity = T
 )
 }
 \arguments{
@@ -113,6 +137,8 @@ visualizing annotation}
 
 \item{chr_text}{a boolean vector to enable or disable chromsome texts for each ploidy.set}
 
+\item{discrete.domain}{manually specify the order of categories.}
+
 \item{legend}{a boolean vector to enable or disable legend for each set/ploidy}
 
 \item{hlinks}{a boolean to use hyperlinks supplied in data}
@@ -131,11 +157,13 @@ visualizing annotation}
 
 \item{plot_y_domain}{specify plot y-axis domain. default: list(c(0,0))}
 
-\item{scatter.colors}{specify the group colors for visualizing categories on scatter plot}
+\item{ch2D.colors}{specify the group colors for visualizing categories on 2D chromosome plots}
 
-\item{scatter.lg_x}{specify the x or horizontal distance of scatter plot legend from the origin(bottom right corner)}
+\item{ch2D.cat.order}{manually setting the order of categories for 2D-Chromsome plot}
 
-\item{scatter.lg_y}{specify the y or vertical distance of scatter plot legend}
+\item{ch2D.lg_x}{specify the x or horizontal distance of 2D plot legend from the origin(bottom right corner)}
+
+\item{ch2D.lg_y}{specify the y or vertical distance of 2D plot legend}
 
 \item{ref_line}{a boolean to use horizontal reference line in plot. default: c(FALSE)}
 
@@ -190,6 +218,50 @@ visualizing annotation}
 \item{links.lg_x}{specify x or horizontal distance of links legend from the origin}
 
 \item{links.lg_y}{specify y or vertical distance of links}
+
+\item{n_win.factor}{specify the factor by which the chr will be scaled;increases number of windows (default:1)}
+
+\item{chr.scale.ticks}{specify the number of ticks for chr scale (default:5)}
+
+\item{export.options}{boolean to include export buttons in the plot}
+
+\item{fixed.window}{Boolean to specify wether to use fixed window visualization}
+
+\item{window.size}{specify the window size, if fixed.window is TRUE}
+
+\item{win.summary.display}{boolean to display window summary to console}
+
+\item{remove.last.window}{For fixed window analysis, boolean to specify whether to include last window of chromosomes}
+
+\item{guides}{boolean to display guides}
+
+\item{guides_color}{set guides color.}
+
+\item{ann.h}{set annotation bar height in 2D-Chromosome plot}
+
+\item{chr.2D.plot}{boolean to specify visualize 2d Chromosome plot}
+
+\item{display.chr}{boolean to show.hide chromosome}
+
+\item{plot.shift}{shifting the plots in y direction in case hiding chromosomes}
+
+\item{plot.legend.labels}{specify plot legend labels}
+
+\item{cat.legend.label}{specify categorical-data legends label}
+
+\item{plot.y.labels}{specify plots y-axis labels}
+
+\item{plot.y.lab.x}{adjust plot y labels in x-direction}
+
+\item{plot.y.lab.y}{adjust plot y labels in y-direction}
+
+\item{plot.y.lab.size}{set size of plot y labels}
+
+\item{scale.suffix}{set the suffix for chromosome scale(default:'bp')}
+
+\item{numeric.domain}{manually set data domain(min,max) for heat colors for numeric data}
+
+\item{interactivity}{boolean to enable/disable interactivity on chromosomes}
 }
 \description{
 render an interactive graphics visualization of entire chromosomes

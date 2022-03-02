@@ -5,3 +5,5 @@ dependencies:
    script:
       - d3.v5.js
       - chromoMap-3.0.js
+      - saveSvgAsPng.js
+      - saveFile.js

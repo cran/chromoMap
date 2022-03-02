@@ -15,6 +15,8 @@ HTMLWidgets.widget({
         // adding the division with id  required to render plot
         d3.select(el).append("div")
           .attr("id", x.div_id);
+        d3.select(el).append("div")
+         .attr("id","dwopt");
            //console.log(el);
         // TODO: code to render the widget, e.g.
         //  var data = HTMLWidgets.dataframeToD3(x.chData);
@@ -61,7 +63,11 @@ HTMLWidgets.widget({
           x.plot_filter,c,x.uniq_cates,x.scatter_col,x.grid_text,x.grid_text_size,x.grid_text_y,
           x.scatter_mapping,x.scatter_lg_x,x.scatter_lg_y,
           x.show_links,x.seg_anno,x.directed_edges,x.y_chr_scale,
-          x.links_colors,x.links_lg_x,x.links_lg_y,x.links_color_maps
+          x.links_colors,x.links_lg_x,x.links_lg_y,x.links_color_maps,
+          x.win_scale,x.scale_ticks,x.export_options,x.guides,x.guides_color,
+          x.ann_h,x.display_chr,x.plot_shift,x.plot_legend_label,
+          x.cat_legend_lab,x.plot_y_labs,x.plot_y_lab_x,x.plot_y_lab_y,
+          x.plot_y_lab_size,x.scale_suffix,x.interactivity
 
 );
 
