@@ -1,7 +1,5 @@
 ---
-title: "chromoMap-An R package for Interactive Genomic Visualization of Multi-Omics Data"
-author: "Lakshay Anand"
-date: "`r Sys.Date()`"
+title: "chromoMap v0.4.1 Documentation (R package)"
 output:
   html_document:
     self_contained: yes
@@ -23,19 +21,24 @@ knitr::opts_chunk$set(
 
 <style>
     
-    h2,h3 {
-        color: #10B85F;
-    }
+       
+h2,h3 {color: #10B85F;}
     
 .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
     background-color: #10B85F;
+}
+.active {
+  background-color: #353436;
+  background-image: linear-gradient(to right, #353436 , #78AF9F);
 }
 
 
 </style>
 
-**Author**: [Lakshay Anand](mailto:lakshayanand15@gmail.com)
 
+
+
+<p><strong>NOTE</strong>: This Documentation is also available as R Vignette.</p>
 
 `chromoMap` provides interactive, configurable and elegant graphics visualization of chromosomes or chromosomal regions allowing users to map chromosome features (like genes,SNPs etc.) onto the chromosome and visualize the feature-associated data (like multi-omics data). Each chromosome is composed of genomic-windows(representing a specific range determined based on chromosome length) that, on hover, shows details about the annotations in that locus range. The plots can be saved as HTML documents that can be shared easily. In addition, you can include them in R Markdown or in R Shiny applications. 
 

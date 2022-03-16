@@ -1,7 +1,7 @@
 Package: chromoMap
 Type: Package
 Title: Interactive Genomic Visualization of Biological Data
-Version: 0.4.1
+Version: 4.1.1
 Authors@R: person("Lakshay", "Anand", email = "lakshayanand15@gmail.com", role = c("aut", "cre"))
 Maintainer: Lakshay Anand <lakshayanand15@gmail.com>
 Description: Provides interactive, configurable and elegant graphics visualization of the chromosomes or chromosome regions
@@ -26,5 +26,5 @@ RoxygenNote: 7.1.2
 NeedsCompilation: no
 Author: Lakshay Anand [aut, cre]
 Repository: CRAN
-Packaged: 2022-03-02 20:06:36 UTC; lakshay-anand
-Date/Publication: 2022-03-02 20:50:02 UTC
+Packaged: 2022-03-16 01:29:34 UTC; lakshay-anand
+Date/Publication: 2022-03-16 08:40:02 UTC

@@ -677,7 +677,7 @@ chromoMap <- function(ch.files,
       ch.start = chr.data[[g]]$start[j]
       ch.end = chr.data[[g]]$end[j]
       ch.loci= chr.data[[g]]$n[j]
-      
+      #cat(paste0(g,"-",ch.end,"-",ch.loci))
       
       if(!fixed.window){
         
@@ -688,9 +688,11 @@ chromoMap <- function(ch.files,
       
       shift.distance = chr.data[[g]]$start[j] - 1
       
-      #print(paste0("step size ",g," :",step.size))
+      #print(paste0("step size ",g," :",step.size,',',ch.loci,';;'))
       
-      brkpoints = ceiling(step.size*seq_len(ch.loci))
+      brkpoints = ceiling(step.size*seq(ch.loci))
+      #print(chr.data[[g]]$n[j])
+      #print(seq(chr.data[[g]]$n[j]))
       if(fixed.window){
         if(remove.last.window){
         if(((ch.end-ch.start+1) - brkpoints[(length(brkpoints)-1)]) != step.size){
@@ -740,7 +742,7 @@ chromoMap <- function(ch.files,
     mega.list.of.ranges[[g]]=list.of.ranges
     
   }
-  #print(mega.list.of.ranges[[1]][[1]])
+  #print(mega.list.of.ranges[[1]])
   if(win.summary.display){
   cat("########### Window Summary ##########\n")
   for(q in 1:ploidy){

@@ -1,11 +1,11 @@
-09230a240c6f058364d78c3aa33d1eb1 *DESCRIPTION
+eee5346cf2325e077ab7a3f05d67c46f *DESCRIPTION
 92246690c6d101e98966379d3c99b342 *LICENSE
 351bc7e9b46c888b00578316ce683e3f *NAMESPACE
-260dce6816f407e1d598da1511d96d86 *R/chromoMap.R
-be2a014b80901d639c74ae027fed961e *build/vignette.rds
+84f00eda466ebe4309b818d63eb86718 *R/chromoMap.R
+3264ab3a217c8888158e34bcf0314663 *build/vignette.rds
 03c21f2e69982fadcb857cb23dd16cd6 *inst/doc/chromoMap.R
-42f5e55a74f8811f087b634ec73ca982 *inst/doc/chromoMap.Rmd
-c86f06a86e7371db96e43c3d723b5d52 *inst/doc/chromoMap.html
+dec61d6bcd148978560ad51186e47dac *inst/doc/chromoMap.Rmd
+881c4ca6921fad3ff7687c5ef589fb65 *inst/doc/chromoMap.html
 9bae0ad5c3e80e4c8046f2009daeaf3d *inst/htmlwidgets/chromoMap.js
 5c21bfbaecd6699a17a8bb139a0c7050 *inst/htmlwidgets/chromoMap.yaml
 8f5bbcb0305dde449083bf628f9c3d63 *inst/htmlwidgets/lib/chromoMap-3.0/chromoMap-3.0.js
@@ -14,7 +14,7 @@ b7b50b87cf3d30631885c28d0da9637a *inst/htmlwidgets/lib/chromoMap-3.0/d3.v5.js
 fa80050a4964c129f41641a84e2668e1 *inst/htmlwidgets/lib/chromoMap-3.0/saveSvgAsPng.js
 c798e0b4144eb5eebdf9ed7a33b985b6 *man/chromoMap-shiny.Rd
 8e482e589bbbdde2b995daf02a9614ee *man/chromoMap.Rd
-42f5e55a74f8811f087b634ec73ca982 *vignettes/chromoMap.Rmd
+dec61d6bcd148978560ad51186e47dac *vignettes/chromoMap.Rmd
 c958335f60037c15dd372f645846b510 *vignettes/data/ANNO_DATA_FOR_CATSCATTER.txt
 0c62a145ffd547f99d14676e22f23e5e *vignettes/data/SLINK22.csv
 7aa6d5878f969f999de9430c4127df02 *vignettes/data/SLINK_anno.txt
